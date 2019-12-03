@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import ReactSVG from 'react-svg'
 import './portfolio.css';
+import '../App.css';
 import Cancel from '../../assets/cancel.svg';
 
 class index extends Component {
+   
     render() {
         return (
             <div className="container">
                 <div className="Header">
-                    <span>Portfolio 1</span>
+                    <span>{this.props.dataFromParent}</span>
                     <select id="currency" name="currency">
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
@@ -93,9 +95,9 @@ class index extends Component {
                     <span>Total value of Portfolio 1:<span id="amount"></span> 968.20 $</span>
                 </div>
                 <div className="Header">
-                    <button>Add Stock</button>
-                    <button>Perf graph</button>
-                    <button>Remove selected</button>
+                    <button className="button buttonAdd">Add Stock</button>
+                    <button className="button buttonAdd">Perf graph</button>
+                    <button className="button buttonAdd">Remove selected</button>
                 </div>
             </div>
         );
