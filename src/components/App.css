@@ -1,16 +1,17 @@
 .App{
     display: flex;
     flex-direction: column;
-    justify-content: center;
     padding: 1%;
     width: fit-content;
+    height: fit-content;
 }
 .portfolioAdd{
   font-family: 'courier';
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  width: fit-content;
 }
 #inputPorfolio{
   font-family:  'courier';
@@ -32,6 +33,7 @@
     cursor: pointer;
     font-family: 'courier';
     width:fit-content;
+    height: fit-content;
     
   }
   .buttonAdd {
@@ -44,3 +46,13 @@
     color: black;
     border: 2px solid #555555;
   }
+  
+  .content{
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+    flex-flow: wrap;
+  }
+ 
+  
+ 
