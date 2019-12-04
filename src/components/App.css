@@ -12,19 +12,20 @@
   justify-content: flex-start;
   align-items: center;
   width: fit-content;
+  
 }
 #inputPorfolio{
   font-family:  'courier';
   height: fit-content;
   width: 50%;
-  padding: 12px 20px;
+  padding: 10px 20px;
   
 }
 .button {
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
-    padding: 15px 32px;
+    padding: 5px 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

@@ -20,6 +20,7 @@ button,#cancel{ /*changing cursor icon */
   margin: 2%;
   border:2px solid black;
   width: auto;
+  height:60%;
 }
 
 #cancel{
@@ -31,6 +32,7 @@ button,#cancel{ /*changing cursor icon */
 /* creating table with design*/
 #customers {
   border-collapse: collapse;
+
 }
 
 #customers td, #customers th {
@@ -62,6 +64,6 @@ table th,table td{
 
 table  tbody{
 display:block;
-height:150px;
+max-height:150px;
 overflow:auto;
 }

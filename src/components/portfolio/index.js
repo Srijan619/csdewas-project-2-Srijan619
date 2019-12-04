@@ -6,18 +6,17 @@ import Cancel from '../../assets/cancel.svg';
 
 class index extends Component {
   
- 
     render() {
         return (
             <div className="container">
                 <div className="Header">
-                    <span>{this.props.parentData}</span>
+                    <span>{this.props.name}</span>
                     <select id="currency" name="currency">
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
                     </select>
                    <div>
-                   <ReactSVG id="cancel" src={Cancel} onClick={this.handleDelete} />
+                   <ReactSVG id="cancel" src={Cancel} onClick={this.props.delete}/>
                       
                    </div>
                 </div>
@@ -40,55 +39,7 @@ class index extends Component {
                             <td>47.20 $</td>
                             <td><input type="checkbox"></input></td>
                         </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
-                        <tr>
-                            <td>NOK</td>
-                            <td>4.72 $</td>
-                            <td>10</td>
-                            <td>47.20 $</td>
-                            <td><input type="checkbox"></input></td>
-                        </tr>
+                       
                      </tbody>
                     </table>
                 </div>
