@@ -19,9 +19,7 @@ class App extends Component {
   }
   handleSubmit  = (event) =>{
     event.preventDefault();
-    this.setState({
-      portfolioName:event.target.value
-    })
+    return this.state.portfolioName;
   }
   render() {
     const {portfolioName}=this.state
@@ -29,15 +27,15 @@ class App extends Component {
       <div className="App">
         <form>
         <div className="portfolioAdd">
-        <button onClick={this.handleSubmit} className="button buttonAdd" type="submit">Add new portfolio</button>
+        <button onSubmit={this.handleSubmit} className="button buttonAdd" type="submit">Add new portfolio</button>
           <input id="inputPorfolio" type="text" value={portfolioName}
            onChange={this.handlePortfolioName} 
            placeholder="Name of the portfolio">
            </input>
         </div>
-        
+        {console.log(this.handleSubmit)}
         </form>
-        <Portfolio dataFromParent={portfolioName}></Portfolio>
+        <Portfolio parentData={this.handleSubmit}></Portfolio>
       </div>
     );
   }

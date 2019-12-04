@@ -10,7 +10,7 @@ class index extends Component {
         return (
             <div className="container">
                 <div className="Header">
-                    <span>{this.props.dataFromParent}</span>
+                    <span>{this.props.parentData}</span>
                     <select id="currency" name="currency">
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
