@@ -5,7 +5,8 @@ import '../App.css';
 import Cancel from '../../assets/cancel.svg';
 
 class index extends Component {
-   
+  
+ 
     render() {
         return (
             <div className="container">
@@ -16,7 +17,7 @@ class index extends Component {
                         <option value="USD">USD</option>
                     </select>
                    <div>
-                   <ReactSVG id="cancel" src={Cancel} />
+                   <ReactSVG id="cancel" src={Cancel} onClick={this.handleDelete} />
                       
                    </div>
                 </div>
