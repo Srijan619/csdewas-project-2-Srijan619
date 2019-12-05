@@ -1,0 +1,56 @@
+.container{ /* main container to hold all the props*/
+    font-family: "courier";
+    display: flex;
+    flex-direction: column;
+    margin-top: 2%;
+    height: fit-content;
+    width: fit-content;
+  }
+  .tableWrapper{ /* creating wrapper to wrap the table*/
+    margin: 2%;
+    border:2px solid black;
+    width: fit-content;
+    height:60%;
+  }
+  /* creating table with design*/
+  #customers {
+    border-collapse: collapse;
+  
+  }
+  
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #customers tr:hover {background-color: #ddd;}
+  
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #e0bc5a;
+    color: white;
+  }
+  
+  /* Styling the table to manage scrolling */
+  table thead tr{
+    display:block;
+  }
+  
+  table th,table td{
+    width:100px;
+  }
+  
+  
+  table  tbody{
+  display:block;
+  max-height:150px;
+  overflow:auto;
+  }
+  
+#name{
+    text-transform: uppercase;
+  }

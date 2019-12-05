@@ -5,8 +5,8 @@
   flex-direction: column;
   margin-top: 2%;
 }
-button,#cancel{ /*changing cursor icon */
-  cursor: pointer;
+#cancel{ /*changing cursor icon */
+  cursor: pointer; 
 }
 .Header{ /* alligning all the items inside main container*/
   align-items: center;
@@ -19,7 +19,7 @@ button,#cancel{ /*changing cursor icon */
 .tableWrapper{ /* creating wrapper to wrap the table*/
   margin: 2%;
   border:2px solid black;
-  width: auto;
+  width: fit-content;
   height:60%;
 }
 
@@ -66,4 +66,8 @@ table  tbody{
 display:block;
 max-height:150px;
 overflow:auto;
+}
+
+#name{
+  text-transform: uppercase;
 }

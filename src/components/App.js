@@ -15,10 +15,17 @@ class App extends Component {
       users: []
     };
 
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete=this.handleDelete.bind(this,this.state.index);
 
   }
+  handleFormReset = () => {
+    this.setState(({
+      portfolioName:""
+    }))
+  }
+
   handlePortfolioName = (event) =>{
    this.setState({
      portfolioName:event.target.value
@@ -28,14 +35,16 @@ class App extends Component {
     event.preventDefault();
     this.postID=this.postID+1;
     const cparray= Object.assign([],this.state.users);
+    const name=this.state.portfolioName;
     cparray.push({
       id :this.postID,
-      portfolioName: this.state.portfolioName
+      portfolioName: name
     })
     this.setState({
+      name:"",
       users:cparray
     })
-  
+    this.handleFormReset()
   }
   handleDelete  = (index) =>{
     event.preventDefault();
@@ -47,14 +56,16 @@ class App extends Component {
     
   }
   render() {
-    const {users}=this.state
+    const {users,portfolioName}=this.state;
+    const isEnabled=this.state.portfolioName.length>0;
     return (
       <div className="App">
-       <form>
+       <form onSubmit={this.handleSubmit}>
         <div className="portfolioAdd">
-        <button onClick={this.handleSubmit} className="button buttonAdd" type="submit">Add new portfolio</button>
+        <button disabled={!isEnabled} className="button buttonAdd" type="submit">Add new portfolio</button>
           <input id="inputPorfolio" type="text" 
-           onBlur={this.handlePortfolioName} 
+           value={portfolioName}
+           onChange={this.handlePortfolioName} 
            placeholder="Name of the portfolio">
            </input>
          

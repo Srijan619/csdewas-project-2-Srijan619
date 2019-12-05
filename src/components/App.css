@@ -31,7 +31,6 @@
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
-    cursor: pointer;
     font-family: 'courier';
     width:fit-content;
     height: fit-content;
@@ -42,12 +41,13 @@
     color: black;
     border: 2px solid #555555;
   }
-  .buttonAdd:hover {
+  .buttonAdd:hover:enabled {
+    cursor: pointer;
     background-color: rgba(188, 236, 125, 0.966);
     color: black;
     border: 2px solid #555555;
   }
-  
+ 
   .content{
     display: flex;
     flex-direction:row;
