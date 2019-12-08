@@ -4,6 +4,8 @@
   display: flex;
   flex-direction: column;
   margin-top: 2%;
+  max-height: 450px;
+ 
 }
 #cancel{ /*changing cursor icon */
   cursor: pointer; 
@@ -14,13 +16,16 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+ 
   
 }
 .tableWrapper{ /* creating wrapper to wrap the table*/
   margin: 2%;
   border:2px solid black;
   width: fit-content;
-  height:60%;
+  height: fit-content;
+  max-height: 200px;
+  overflow: scroll;
 }
 
 #cancel{
@@ -53,10 +58,17 @@
 }
 
 /* Styling the table to manage scrolling */
-table thead tr{
+table {
   display:block;
+
 }
 
+th{
+  background: white;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
 table th,table td{
   width:100px;
 }
@@ -64,7 +76,8 @@ table th,table td{
 
 table  tbody{
 display:block;
-max-height:150px;
+height: 50px;
+max-height:100px;
 overflow:auto;
 }
 
