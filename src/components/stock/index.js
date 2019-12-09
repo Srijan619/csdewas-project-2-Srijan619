@@ -8,9 +8,11 @@ export default class index extends Component {
                 <tbody>
                     <tr>
                         <td id="name">{this.props.stockName} </td>
-                        <td>{this.props.unitValue}</td>
+                        <td>"Purchased"</td>
                         <td>{this.props.quantity}</td>
+                        <td>"Current"</td>
                         <td>{this.props.totalValue}</td>
+                        <td>{this.props.purchaseDate}</td>
                         <td><input type="checkbox" name="checkbox" onChange={this.props.handleChecked}  ></input></td>
                     </tr>
                 </tbody>

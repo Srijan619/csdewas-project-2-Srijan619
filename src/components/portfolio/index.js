@@ -14,7 +14,7 @@ class index extends Component {
         this.initialState = {
             ids: '',
             stockName: '',
-            unitValue: '',
+            datePurchase:'',
             quantity: '',
             totalValue: '',
             portfolioValue: '',
@@ -94,15 +94,15 @@ class index extends Component {
         event.preventDefault();
         this.stockID = this.stockID + 1;
         const cparray = Object.assign([], this.state.stockArray);
-        const total = this.state.quantity * this.state.unitValue;
-        this.calculateTotalValue(total);
+        //const total = this.state.quantity * this.state.unitValue;
+       // this.calculateTotalValue(total);
         cparray.push({
             ids: this.stockID,
             checkbox: this.state.checkbox,
             stockName: this.state.stockName,
-            unitValue: this.state.unitValue,
+            datePurchase: this.state.datePurchase,
             quantity: this.state.quantity,
-            totalValue: total,
+            //totalValue: total,
             portfolioValue: this.state.portfolioValue
         })
 
@@ -165,8 +165,8 @@ class index extends Component {
    
 
     render() {
-        const { stockArray, stockName, quantity, unitValue, portfolioValue, currencyOption } = this.state;
-        const isEnabled = (stockName.length && quantity.length && unitValue.length) > 0;
+        const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption } = this.state;
+        const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
         return (
             <div className="container">
                 <div className="Header">
@@ -182,10 +182,12 @@ class index extends Component {
                         <table id="customers">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Unit value</th>
+                                    <th>Symbol</th>
+                                    <th>Purchase Value</th>
                                     <th>Quantity</th>
+                                    <th>Current Value</th>
                                     <th>Total Value</th>
+                                    <th>Purchased Date</th>
                                     <th>Select</th>
                                 </tr>
                             </thead>
@@ -194,9 +196,9 @@ class index extends Component {
                                     <Stock
                                         key={post.ids}
                                         stockName={post.stockName}
-                                        unitValue={post.unitValue}
                                         quantity={post.quantity}
                                         totalValue={post.totalValue}
+                                        purchaseDate={post.datePurchase}
                                         handleChecked={this.handleChecked}
                                     ></Stock>
 
@@ -209,8 +211,8 @@ class index extends Component {
                 <form ref="stock">
                     <div className="tableWrapper" style={{ overflow: "hidden" }}>
 
-                        <input type="text" name="stockName" onChange={this.handleFormChange} placeholder="Name" id="name"></input>
-                        <input type="number" name="unitValue" onChange={this.handleFormChange} placeholder="Unit Value"></input>
+                        <input type="text" name="stockName" onChange={this.handleFormChange} placeholder="Symbol" id="name"></input>
+                        <input type="date" name="datePurchase" onChange={this.handleFormChange} placeholder="Unit Value"></input>
                         <input type="number" name="quantity" onChange={this.handleFormChange} placeholder="Quantity"></input>
 
                     </div>
