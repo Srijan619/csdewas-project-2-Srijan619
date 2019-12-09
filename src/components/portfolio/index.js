@@ -3,13 +3,15 @@ import ReactSVG from 'react-svg'
 import './portfolio.css';
 import '../App.css';
 import Cancel from '../../assets/cancel.svg';
+import Stock from '../../components/stock';
+import Currency from '../../components/currency';
 
 class index extends Component {
     constructor(props) {
         super(props);
         this.stockID = 0;
 
-        this.state = {
+        this.initialState = {
             ids: '',
             stockName: '',
             unitValue: '',
@@ -18,11 +20,14 @@ class index extends Component {
             portfolioValue: '',
             checkbox: false,
             stockArray: [],
-            checkedItems: []
+            checkedItems: [],
+            currencyOption: 'EUR'
 
         };
 
-
+        this.state=this.initialState
+        
+        this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
         this.handleChecked = this.handleChecked.bind(this);
         this.handleFormReset = this.handleFormReset.bind(this);
         this.hanleAdd = this.handleAdd.bind(this);
@@ -38,7 +43,39 @@ class index extends Component {
             totalValue: "",
         }))
     }
+    handleCurrencyChange(event) {
+        this.setState({ currencyOption: event.target.value });
+        this.changeCurrency(event.target.value)
+    }
+    changeCurrency(curr) {
+        const usd_rate = 1.10
+        const cparray = Object.assign([], this.state.stockArray);
+       
 
+       let unit=[];
+        switch (curr) {
+            case "USD":
+                    cparray.map((posts) =>{
+                        unit=[]
+                        unit=(posts.unitValue*usd_rate).toFixed(2);
+                    })
+              break;
+            case "EUR":
+                    cparray.map((posts) =>{
+                        unit=[]
+                        unit=posts.unitValue;
+                    })
+                break; 
+        }
+        cparray.map((posts) =>{
+            posts.unitValue=unit
+        })
+        this.setState({
+            stockArray:cparray
+        })
+     
+        console.log(unit)
+    }
     calculateTotalValue(total_value) {
         const cparray = Object.assign([], this.state.stockArray);
 
@@ -46,7 +83,6 @@ class index extends Component {
 
             total_value = total_value + parseFloat(cparray[i].totalValue);
         }
-        console.log(total_value)
         this.setState({
             portfolioValue: total_value
         })
@@ -73,23 +109,24 @@ class index extends Component {
         this.setState({
             stockArray: cparray
         })
-
-
     }
 
     handleChecked(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
-        
+
+        /*
         const cparray = Object.assign([], this.state.stockArray);
         for(var i=0;i<cparray.length;i++)
         {
         cparray[i].checkbox=value
+        */
         this.setState({
-           
+            [name]: value
         })
-    }
+
+
     }
     handleRemove = (index) => {
         event.preventDefault();
@@ -125,19 +162,16 @@ class index extends Component {
         });
 
     }
-
+   
 
     render() {
-        const { stockArray, stockName, quantity, unitValue, portfolioValue } = this.state;
+        const { stockArray, stockName, quantity, unitValue, portfolioValue, currencyOption } = this.state;
         const isEnabled = (stockName.length && quantity.length && unitValue.length) > 0;
         return (
             <div className="container">
                 <div className="Header">
                     <span>{this.props.name}</span>
-                    <select id="currency" name="currency">
-                        <option value="EUR">EUR</option>
-                        <option value="USD">USD</option>
-                    </select>
+                    <Currency currencyOption={currencyOption} changeData={this.handleCurrencyChange} ></Currency>
                     <div>
                         <ReactSVG id="cancel" src={Cancel} onClick={this.props.delete} />
 
@@ -157,17 +191,15 @@ class index extends Component {
                             </thead>
                             {stockArray.map((post, index) => {
                                 return (
+                                    <Stock
+                                        key={post.ids}
+                                        stockName={post.stockName}
+                                        unitValue={post.unitValue}
+                                        quantity={post.quantity}
+                                        totalValue={post.totalValue}
+                                        handleChecked={this.handleChecked}
+                                    ></Stock>
 
-
-                                    <tbody key={post.ids}>
-                                        <tr>
-                                            <td style={{textTransform:"uppercase"}}>{post.stockName} </td>
-                                            <td>{post.unitValue}</td>
-                                            <td>{post.quantity}</td>
-                                            <td>{post.totalValue}</td>
-                                            <td><input type="checkbox" name="checkbox" onChange={this.handleChecked}  ></input></td>
-                                        </tr>
-                                    </tbody>
                                 )
                             })}
 

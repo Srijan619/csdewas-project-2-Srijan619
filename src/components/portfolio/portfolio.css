@@ -72,15 +72,9 @@ th{
 table th,table td{
   width:100px;
 }
-
-
 table  tbody{
 display:block;
 height: 50px;
 max-height:100px;
 overflow:auto;
-}
-
-#name{
-  text-transform: uppercase;
 }
