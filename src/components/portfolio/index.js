@@ -12,6 +12,7 @@ class index extends Component {
         this.stockID = 0;
 
         this.initialState = {
+            portfolioID:'',
             ids: '',
             stockName: '',
             datePurchase: '',
@@ -20,7 +21,6 @@ class index extends Component {
             quantity: '',
             totalValue: '',
             portfolioValue: '',
-            checkbox: false,
             stockArray: [],
             checkedItems: [],
             currencyOption: 'EUR',
@@ -31,10 +31,8 @@ class index extends Component {
         this.state = this.initialState
 
         this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
-        this.handleChecked = this.handleChecked.bind(this);
         this.hanleAdd = this.handleAdd.bind(this);
         this.handleFormChange = this.handleFormChange.bind(this);
-        this.handleRemove = this.handleRemove.bind(this, this.state.index);
 
     }
 
@@ -88,86 +86,51 @@ class index extends Component {
     handleAdd = (event) => {
         event.preventDefault();
 
-        console.log(this.state.currentValue);
         this.stockID = this.stockID + 1;
         this.fetchingData(this.stockID);
-        const cparray = Object.assign([], this.state.stockArray);
-
-        cparray.push({
-            ids: this.stockID,
-            checkbox: this.state.checkbox,
-            stockName: this.state.stockName,
-            datePurchase: this.state.datePurchase,
-            quantity: this.state.quantity,
-        })
-
-        this.setState({
-            stockArray: cparray,
-        })
-
-
-    }
-
-    handleChecked(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        /*
-        const cparray = Object.assign([], this.state.stockArray);
-        for(var i=0;i<cparray.length;i++)
-        {
-        cparray[i].checkbox=value
-        */
-        this.setState({
-            [name]: value
-        })
-
-
-    }
-    handleRemove = (index) => {
-        event.preventDefault();
-        /*
-        const cparray = Object.assign([], this.state.stockArray);
-        const selectedData=[];
-        for(var i=0;i<cparray.length;i++)
-        {
-          if(cparray[i].checkbox===true)
-          {
-            console.log("Selected"+cparray[i].stockName);
-            selectedData.push(cparray[i])
-          
-          }  
+        let cparray = Object.assign([], this.state.stockArray);
+        let data=JSON.parse(localStorage.getItem("stockData"));
+       
+        if (data===null||data.length===0) {
+            cparray.push({
+                portfolioID:this.props.id,
+                ids: this.stockID,
+                stockName: this.state.stockName,
+                datePurchase: this.state.datePurchase,
+                quantity: this.state.quantity,
+            })
+            localStorage.setItem("stockData", JSON.stringify(cparray));
+        }
+        else {
+            let last_id = parseInt(data[data.length - 1].ids);
+            this.stockID = this.stockID + last_id;
+            cparray = data;
+            cparray.push({
+                portfolioID:this.props.id,
+                ids: this.stockID,
+                stockName: this.state.stockName,
+                datePurchase: this.state.datePurchase,
+                quantity: this.state.quantity,
+            })
+            localStorage.setItem("stockData", JSON.stringify(cparray));
         }
         this.setState({
-            selectedData:[],
-            stockArray: selectedData
+            stockArray: JSON.parse(localStorage.getItem("stockData")),
         })
 
-        */
-        for (var i = 0; i < this.state.checkedItems.length; i++) {
-            // Convert id from string back to integer.
-            let index = parseInt(this.state.checkedItems[i])
-            // Replace the item to delete with empty string, so that every
-            // other element remains in place.
-            this.state.checkbox[index] = '';
-        }
-        // Re-render the component by calling setState.
-        this.setState({
-            checkedItems: [],
-            checkbox: this.state.checkbox
-        });
 
     }
+
     handleDelete = (index) => {
         event.preventDefault();
-        const cparray = Object.assign([], this.state.stockArray);
-        cparray.splice(index, 1);
+        let list = JSON.parse(localStorage.getItem("stockData"));
+        list.splice(index, 1);
         this.setState({
-            stockArray: cparray
+            stockArray: list
         })
-
+        localStorage.setItem("stockData", JSON.stringify(list));
     }
+ 
     async fetchingData(id) {
         const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
         const url = "https://cloud.iexapis.com//stable/stock/";
@@ -187,23 +150,33 @@ class index extends Component {
 
 
         const cparray = Object.assign([], this.state.stockArray);
+        let data=JSON.parse(localStorage.getItem("stockData"));
         const total = (this.state.quantity * currentValue).toFixed(2);
         console.log(this.state.quantity + " and " + total);
-
+        
         cparray.map((posts) => {
-            if (posts.ids === id) {
+            if (posts.portfolioID === this.props.id) {
                 posts.currentValue = currentValue;
                 posts.purchaseValue = purchaseValue[0].uHigh;
                 posts.totalValue = total;
             }
         })
+        localStorage.setItem("stockData",JSON.stringify(cparray));
         this.setState({
-            stockArray: cparray,
+            stockArray: data
         })
         this.calculateTotalValue();
 
     }
-
+    componentWillMount() {
+        let data = localStorage.getItem("stockData");
+        
+        if(data!==null){
+        this.setState({
+          stockArray: JSON.parse(data)
+        })}
+      }
+   
     render() {
         const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption, currencySign } = this.state;
         const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
@@ -233,20 +206,22 @@ class index extends Component {
                         </thead>
                         <div>
                             {stockArray.map((post, index) => {
+                                if(post.portfolioID===this.props.id){
                                 return (
                                     <Stock
-                                        key={post.ids}
+                                        key={post.portfolioID}
                                         stockName={post.stockName}
                                         currentValue={post.currentValue}
                                         purchaseValue={post.purchaseValue}
                                         quantity={post.quantity}
                                         totalValue={post.totalValue}
                                         purchaseDate={post.datePurchase}
-                                        delete={this.handleDelete}
+                                        delete={this.handleDelete.bind(this,index)}
                                         currencySign={currencySign}
                                     ></Stock>
 
                                 )
+                            }
                             })}
                         </div>
                     </table>

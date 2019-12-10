@@ -16,9 +16,9 @@ class App extends Component {
       users: []
     };
 
-
+    
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDelete=this.handleDelete.bind(this,this.state.index);
+   
 
   }
   
@@ -27,31 +27,55 @@ class App extends Component {
      portfolioName:event.target.value
    })
   }
-  handleSubmit  = (event) =>{
+  handleSubmit = (event) => {
     event.preventDefault();
-    this.postID=this.postID+1;
-    const cparray= Object.assign([],this.state.users);
-    const name=this.state.portfolioName;
-    cparray.push({
-      id :this.postID,
-      portfolioName: name
-    })
+    this.postID = this.postID + 1;
+    let cparray = Object.assign([], this.state.users);
+    const name = this.state.portfolioName;
+    let data=JSON.parse(localStorage.getItem("portfolio"));
+    if (data===null||data.length===0) {
+      cparray.push({
+        id: this.postID,
+        portfolioName: name
+      })
+      localStorage.setItem("portfolio", JSON.stringify(cparray));
+    }
+    else {
+      let  last_id = parseInt(data[data.length - 1].id);
+      this.postID=this.postID+last_id;
+      cparray = data;
+      cparray.push({
+        id: this.postID,
+        portfolioName: name
+      })
+      localStorage.setItem("portfolio", JSON.stringify(cparray));
+    }
     this.setState({
-      name:"",
-      users:cparray
+      name: "",
+      users: JSON.parse(localStorage.getItem("portfolio"))
     })
     this.handleFormReset()
+
   }
-  handleDelete  = (index) =>{
+  handleDelete = (index) => {
     event.preventDefault();
-    const cparray= Object.assign([],this.state.users);
-    cparray.splice(index,1);
+
+    let list = JSON.parse(localStorage.getItem("portfolio"));
+    list.splice(index, 1);
     this.setState({
-       users:cparray 
+      users: list
     })
+    localStorage.setItem("portfolio", JSON.stringify(list));
     
   }
-
+  componentWillMount() {
+    let data = localStorage.getItem("portfolio");
+    
+    if(data!==null){
+    this.setState({
+      users: JSON.parse(data)
+    })}
+  }
   handleFormReset = () => {
     this.setState(({
       portfolioName:""
@@ -83,7 +107,7 @@ class App extends Component {
               key={post.id}
               id={post.id}
               name={post.portfolioName}
-              delete={this.handleDelete}></Portfolio>
+              delete={this.handleDelete.bind(this.index)}></Portfolio>
             )
           })}
           
