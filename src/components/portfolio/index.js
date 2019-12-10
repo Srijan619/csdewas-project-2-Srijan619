@@ -14,35 +14,30 @@ class index extends Component {
         this.initialState = {
             ids: '',
             stockName: '',
-            datePurchase:'',
+            datePurchase: '',
+            purchaseValue: '',
+            currentValue: '',
             quantity: '',
             totalValue: '',
             portfolioValue: '',
             checkbox: false,
             stockArray: [],
             checkedItems: [],
-            currencyOption: 'EUR'
+            currencyOption: 'EUR',
+            currencySign: '$',
 
         };
 
-        this.state=this.initialState
-        
+        this.state = this.initialState
+
         this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
         this.handleChecked = this.handleChecked.bind(this);
-        this.handleFormReset = this.handleFormReset.bind(this);
         this.hanleAdd = this.handleAdd.bind(this);
         this.handleFormChange = this.handleFormChange.bind(this);
         this.handleRemove = this.handleRemove.bind(this, this.state.index);
 
     }
-    handleFormReset = () => {
-        this.setState(({
-            stockName: "",
-            unitValue: "",
-            quantity: "",
-            totalValue: "",
-        }))
-    }
+
     handleCurrencyChange(event) {
         this.setState({ currencyOption: event.target.value });
         this.changeCurrency(event.target.value)
@@ -50,41 +45,41 @@ class index extends Component {
     changeCurrency(curr) {
         const usd_rate = 1.10
         const cparray = Object.assign([], this.state.stockArray);
-       
 
-       let unit=[];
+
+        let unit = [];
         switch (curr) {
             case "USD":
-                    cparray.map((posts) =>{
-                        unit=[]
-                        unit=(posts.unitValue*usd_rate).toFixed(2);
-                    })
-              break;
+                cparray.map((posts) => {
+                    unit = []
+                    unit = (posts.unitValue * usd_rate).toFixed(2);
+                })
+                break;
             case "EUR":
-                    cparray.map((posts) =>{
-                        unit=[]
-                        unit=posts.unitValue;
-                    })
-                break; 
+                cparray.map((posts) => {
+                    unit = []
+                    unit = posts.unitValue;
+                })
+                break;
         }
-        cparray.map((posts) =>{
-            posts.unitValue=unit
+        cparray.map((posts) => {
+            posts.unitValue = unit
         })
         this.setState({
-            stockArray:cparray
+            stockArray: cparray
         })
-     
+
         console.log(unit)
     }
-    calculateTotalValue(total_value) {
+    calculateTotalValue() {
         const cparray = Object.assign([], this.state.stockArray);
-
+        let total_value = 0;
         for (var i = 0; i < cparray.length; i++) {
 
             total_value = total_value + parseFloat(cparray[i].totalValue);
         }
         this.setState({
-            portfolioValue: total_value
+            portfolioValue: total_value.toFixed(2)
         })
     }
     handleFormChange = (evt) => {
@@ -92,23 +87,25 @@ class index extends Component {
     }
     handleAdd = (event) => {
         event.preventDefault();
+
+        console.log(this.state.currentValue);
         this.stockID = this.stockID + 1;
+        this.fetchingData(this.stockID);
         const cparray = Object.assign([], this.state.stockArray);
-        //const total = this.state.quantity * this.state.unitValue;
-       // this.calculateTotalValue(total);
+
         cparray.push({
             ids: this.stockID,
             checkbox: this.state.checkbox,
             stockName: this.state.stockName,
             datePurchase: this.state.datePurchase,
             quantity: this.state.quantity,
-            //totalValue: total,
-            portfolioValue: this.state.portfolioValue
         })
 
         this.setState({
-            stockArray: cparray
+            stockArray: cparray,
         })
+
+
     }
 
     handleChecked(event) {
@@ -162,10 +159,53 @@ class index extends Component {
         });
 
     }
-   
+    handleDelete = (index) => {
+        event.preventDefault();
+        const cparray = Object.assign([], this.state.stockArray);
+        cparray.splice(index, 1);
+        this.setState({
+            stockArray: cparray
+        })
+
+    }
+    async fetchingData(id) {
+        const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
+        const url = "https://cloud.iexapis.com//stable/stock/";
+        const dateFormat = this.state.datePurchase.split("-").join("");
+        const stockName = this.state.stockName;
+        const currentValueUrl = url + stockName + "/quote/latestPrice?token=" + apiKey;
+        const purchaseValueUrl = url + stockName + "/chart/date/" + dateFormat + "?chartByDay=true&token=" + apiKey;
+
+        //Getting the current Value from the URL
+
+        const response_currentValue = await fetch(currentValueUrl);
+        const currentValue = await response_currentValue.json();
+
+        //Getting the purchase Value from the URL
+        const response_purchaseValue = await fetch(purchaseValueUrl);
+        const purchaseValue = await response_purchaseValue.json();
+
+
+        const cparray = Object.assign([], this.state.stockArray);
+        const total = (this.state.quantity * currentValue).toFixed(2);
+        console.log(this.state.quantity + " and " + total);
+
+        cparray.map((posts) => {
+            if (posts.ids === id) {
+                posts.currentValue = currentValue;
+                posts.purchaseValue = purchaseValue[0].uHigh;
+                posts.totalValue = total;
+            }
+        })
+        this.setState({
+            stockArray: cparray,
+        })
+        this.calculateTotalValue();
+
+    }
 
     render() {
-        const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption } = this.state;
+        const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption, currencySign } = this.state;
         const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
         return (
             <div className="container">
@@ -177,37 +217,41 @@ class index extends Component {
 
                     </div>
                 </div>
-                <div>
-                    <div className="tableWrapper">
-                        <table id="customers">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Purchase Value</th>
-                                    <th>Quantity</th>
-                                    <th>Current Value</th>
-                                    <th>Total Value</th>
-                                    <th>Purchased Date</th>
-                                    <th>Select</th>
-                                </tr>
-                            </thead>
+
+                <div className="tableWrapper">
+                    <table id="customers">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Purchase Value</th>
+                                <th>Quantity</th>
+                                <th>Current Value</th>
+                                <th>Total Value</th>
+                                <th>Purchased Date</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <div>
                             {stockArray.map((post, index) => {
                                 return (
                                     <Stock
                                         key={post.ids}
                                         stockName={post.stockName}
+                                        currentValue={post.currentValue}
+                                        purchaseValue={post.purchaseValue}
                                         quantity={post.quantity}
                                         totalValue={post.totalValue}
                                         purchaseDate={post.datePurchase}
-                                        handleChecked={this.handleChecked}
+                                        delete={this.handleDelete}
+                                        currencySign={currencySign}
                                     ></Stock>
 
                                 )
                             })}
-
-                        </table>
-                    </div>
+                        </div>
+                    </table>
                 </div>
+
                 <form ref="stock">
                     <div className="tableWrapper" style={{ overflow: "hidden" }}>
 
@@ -216,13 +260,13 @@ class index extends Component {
                         <input type="number" name="quantity" onChange={this.handleFormChange} placeholder="Quantity"></input>
 
                     </div>
-                    <div className="Header">
-                        <span>Total value of Portfolio 1:<span id="amount"></span> {portfolioValue}</span>
+                    <div className="Header" style={{ width: "fit-content" }}>
+                        <span>Total value of Portfolio 1:<span id="amount"></span> {portfolioValue}</span><span>{currencySign}</span>
                     </div>
                     <div className="Header">
                         <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
                         <button onClick={""} className="button buttonAdd" type="submit">Perf graph</button>
-                        <button onClick={this.handleRemove} className="button buttonAdd" type="submit">Remove selected</button>
+                        <button onClick={"this.handleRemove"} className="button buttonAdd" type="submit">Refresh</button>
                     </div>
                 </form>
             </div>

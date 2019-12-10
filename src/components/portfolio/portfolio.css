@@ -5,6 +5,7 @@
   flex-direction: column;
   margin-top: 2%;
   max-height: 450px;
+  width: fit-content;
  
 }
 #cancel{ /*changing cursor icon */
@@ -16,7 +17,6 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
- 
   
 }
 .tableWrapper{ /* creating wrapper to wrap the table*/
@@ -26,6 +26,7 @@
   height: fit-content;
   max-height: 200px;
   overflow: scroll;
+  position: relative;
 }
 
 #cancel{
@@ -37,7 +38,6 @@
 /* creating table with design*/
 #customers {
   border-collapse: collapse;
-
 }
 
 #customers td, #customers th {
@@ -60,7 +60,6 @@
 /* Styling the table to manage scrolling */
 table {
   display:block;
-
 }
 
 th{
@@ -76,5 +75,4 @@ table  tbody{
 display:block;
 height: 50px;
 max-height:100px;
-overflow:auto;
 }

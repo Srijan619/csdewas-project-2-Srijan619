@@ -5,6 +5,7 @@ import './App.css';
 
 
 class App extends Component {
+  userData;
   constructor(props) {
     super(props);
     this.postID=0;
@@ -20,12 +21,7 @@ class App extends Component {
     this.handleDelete=this.handleDelete.bind(this,this.state.index);
 
   }
-  handleFormReset = () => {
-    this.setState(({
-      portfolioName:""
-    }))
-  }
-
+  
   handlePortfolioName = (event) =>{
    this.setState({
      portfolioName:event.target.value
@@ -55,6 +51,13 @@ class App extends Component {
     })
     
   }
+
+  handleFormReset = () => {
+    this.setState(({
+      portfolioName:""
+    }))
+  }
+
   render() {
     const {users,portfolioName}=this.state;
     const isEnabled=this.state.portfolioName.length>0;

@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import ReactSVG from 'react-svg'
+import Cancel from '../../assets/cancel.svg';
 import './stock.css';
 
 export default class index extends Component {
@@ -6,14 +8,17 @@ export default class index extends Component {
         return (
             <div>
                 <tbody>
-                    <tr>
+                    <tr key={this.props.key}>
                         <td id="name">{this.props.stockName} </td>
-                        <td>"Purchased"</td>
+                        <td>{this.props.purchaseValue}{this.props.currencySign}</td>
                         <td>{this.props.quantity}</td>
-                        <td>"Current"</td>
-                        <td>{this.props.totalValue}</td>
+                        <td>{this.props.currentValue}{this.props.currencySign}</td>
+                        <td>{this.props.totalValue}{this.props.currencySign}</td>
                         <td>{this.props.purchaseDate}</td>
-                        <td><input type="checkbox" name="checkbox" onChange={this.props.handleChecked}  ></input></td>
+                        <td>  <div>
+                        <ReactSVG id="cancel" src={Cancel} onClick={this.props.delete} />
+
+                    </div></td>
                     </tr>
                 </tbody>
             </div>
