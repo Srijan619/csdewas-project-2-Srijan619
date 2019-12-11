@@ -12,7 +12,7 @@ class index extends Component {
         this.stockID = 0;
 
         this.initialState = {
-            portfolioID:'',
+            portfolioID: '',
             ids: '',
             stockName: '',
             datePurchase: '',
@@ -83,21 +83,26 @@ class index extends Component {
     handleFormChange = (evt) => {
         this.setState({ [evt.target.name]: evt.target.value });
     }
-    handleAdd = (event) => {
+     handleAdd = async (event) => {
         event.preventDefault();
 
         this.stockID = this.stockID + 1;
-        this.fetchingData(this.stockID);
+
         let cparray = Object.assign([], this.state.stockArray);
-        let data=JSON.parse(localStorage.getItem("stockData"));
-       
-        if (data===null||data.length===0) {
+        let data = JSON.parse(localStorage.getItem("stockData"));
+        var value = await this.fetchingData();
+        console.log(value.currentValue);
+
+        if (data === null || data.length === 0) {
             cparray.push({
-                portfolioID:this.props.id,
+                portfolioID: this.props.id,
                 ids: this.stockID,
                 stockName: this.state.stockName,
                 datePurchase: this.state.datePurchase,
                 quantity: this.state.quantity,
+                currentValue:value.currentValue,
+                purchaseValue:value.purchaseValue
+
             })
             localStorage.setItem("stockData", JSON.stringify(cparray));
         }
@@ -106,19 +111,21 @@ class index extends Component {
             this.stockID = this.stockID + last_id;
             cparray = data;
             cparray.push({
-                portfolioID:this.props.id,
+                portfolioID: this.props.id,
                 ids: this.stockID,
                 stockName: this.state.stockName,
                 datePurchase: this.state.datePurchase,
                 quantity: this.state.quantity,
+                currentValue:value.currentValue,
+                purchaseValue:value.purchaseValue
+
             })
             localStorage.setItem("stockData", JSON.stringify(cparray));
         }
+
         this.setState({
             stockArray: JSON.parse(localStorage.getItem("stockData")),
         })
-
-
     }
 
     handleDelete = (index) => {
@@ -130,8 +137,8 @@ class index extends Component {
         })
         localStorage.setItem("stockData", JSON.stringify(list));
     }
- 
-    async fetchingData(id) {
+
+    async fetchingData() {
         const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
         const url = "https://cloud.iexapis.com//stable/stock/";
         const dateFormat = this.state.datePurchase.split("-").join("");
@@ -149,13 +156,22 @@ class index extends Component {
         const purchaseValue = await response_purchaseValue.json();
 
 
-        const cparray = Object.assign([], this.state.stockArray);
-        let data=JSON.parse(localStorage.getItem("stockData"));
+        //const cparray = Object.assign([], this.state.stockArray);
+        // let data=JSON.parse(localStorage.getItem("stockData"));
         const total = (this.state.quantity * currentValue).toFixed(2);
         console.log(this.state.quantity + " and " + total);
-        
+        console.log(currentValue + "and" + purchaseValue[0].uHigh);
+
+        return await {
+            currentValue: currentValue,
+            purchaseValue: purchaseValue[0].uHigh,
+        };
+        /* 
         cparray.map((posts) => {
-            if (posts.portfolioID === this.props.id) {
+            
+            if (posts.portfolioID === this.props.id && posts.ids=== id) {
+                console.log(id+ "and "+posts.ids);
+                console.log("Hello"+posts.portfolioID+" "+currentValue+" "+ purchaseValue[0].uHigh);
                 posts.currentValue = currentValue;
                 posts.purchaseValue = purchaseValue[0].uHigh;
                 posts.totalValue = total;
@@ -165,18 +181,22 @@ class index extends Component {
         this.setState({
             stockArray: data
         })
-        this.calculateTotalValue();
+        this.calculateTotalValue();*/
 
     }
     componentWillMount() {
-        let data = localStorage.getItem("stockData");
-        
-        if(data!==null){
-        this.setState({
-          stockArray: JSON.parse(data)
-        })}
-      }
-   
+        let data = JSON.parse(localStorage.getItem("stockData"));
+
+        if (data !== null) {
+
+            this.setState({
+                stockArray: data
+            })
+        }
+
+    }
+
+
     render() {
         const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption, currencySign } = this.state;
         const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
@@ -206,22 +226,22 @@ class index extends Component {
                         </thead>
                         <div>
                             {stockArray.map((post, index) => {
-                                if(post.portfolioID===this.props.id){
-                                return (
-                                    <Stock
-                                        key={post.portfolioID}
-                                        stockName={post.stockName}
-                                        currentValue={post.currentValue}
-                                        purchaseValue={post.purchaseValue}
-                                        quantity={post.quantity}
-                                        totalValue={post.totalValue}
-                                        purchaseDate={post.datePurchase}
-                                        delete={this.handleDelete.bind(this,index)}
-                                        currencySign={currencySign}
-                                    ></Stock>
+                                if (post !== null && post.portfolioID === this.props.id) {
+                                    return (
+                                        <Stock
+                                            key={post.ids}
+                                            stockName={post.stockName}
+                                            currentValue={post.currentValue}
+                                            purchaseValue={post.purchaseValue}
+                                            quantity={post.quantity}
+                                            totalValue={post.totalValue}
+                                            purchaseDate={post.datePurchase}
+                                            delete={this.handleDelete.bind(this, index)}
+                                            currencySign={currencySign}
+                                        ></Stock>
 
-                                )
-                            }
+                                    )
+                                }
                             })}
                         </div>
                     </table>
