@@ -13,6 +13,7 @@ class App extends Component {
     this.state = {
       id:"",
       portfolioName:'',
+      portfolioValue:'',
       users: []
     };
 
@@ -21,7 +22,18 @@ class App extends Component {
    
 
   }
-  
+  myCallback = (dataFromChild) => {
+    let cparray = Object.assign([], this.state.users);
+    console.log(this.props.name);
+    console.log(cparray[0].id);
+    cparray.map(post=>{
+      if(post.id===this.postID){
+        console.log(post.id+" matched "+this.state.id);
+        post.portfolioValue=dataFromChild
+      }
+    })
+    this.setState({ users:cparray });
+  }
   handlePortfolioName = (event) =>{
    this.setState({
      portfolioName:event.target.value
@@ -36,7 +48,8 @@ class App extends Component {
     if (data===null||data.length===0) {
       cparray.push({
         id: this.postID,
-        portfolioName: name
+        portfolioName: name,
+        portfolioValue:this.state.portfolioValue
       })
       localStorage.setItem("portfolio", JSON.stringify(cparray));
     }
@@ -46,7 +59,8 @@ class App extends Component {
       cparray = data;
       cparray.push({
         id: this.postID,
-        portfolioName: name
+        portfolioName: name,
+         portfolioValue:this.state.portfolioValue
       })
       localStorage.setItem("portfolio", JSON.stringify(cparray));
     }
@@ -75,6 +89,9 @@ class App extends Component {
     this.setState({
       users: JSON.parse(data)
     })}
+  }
+  componentWillUpdate(){
+    
   }
   handleFormReset = () => {
     this.setState(({
@@ -107,7 +124,8 @@ class App extends Component {
               key={post.id}
               id={post.id}
               name={post.portfolioName}
-              delete={this.handleDelete.bind(this.index)}></Portfolio>
+              delete={this.handleDelete.bind(this,index)}
+              portfolioValue={this.myCallback}></Portfolio>
             )
           })}
           

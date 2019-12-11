@@ -69,16 +69,20 @@ class index extends Component {
 
         console.log(unit)
     }
-    calculateTotalValue() {
+    calculateTotalValue(total_value) {
         const cparray = Object.assign([], this.state.stockArray);
-        let total_value = 0;
+        let total=parseFloat(total_value);
+        let data=JSON.parse(localStorage.getItem("portfolio"));
+       
         for (var i = 0; i < cparray.length; i++) {
-
-            total_value = total_value + parseFloat(cparray[i].totalValue);
+            if(cparray[i].portfolioID===this.props.id){
+            total += parseFloat(cparray[i].totalValue);}
         }
+ 
         this.setState({
-            portfolioValue: total_value.toFixed(2)
+            portfolioValue: total.toFixed(2)
         })
+        this.props.portfolioValue(total.toFixed(2));
     }
     handleFormChange = (evt) => {
         this.setState({ [evt.target.name]: evt.target.value });
@@ -91,8 +95,10 @@ class index extends Component {
         let cparray = Object.assign([], this.state.stockArray);
         let data = JSON.parse(localStorage.getItem("stockData"));
         var value = await this.fetchingData();
+        const total = (this.state.quantity * value.currentValue).toFixed(2);
+        this.calculateTotalValue(total);
         console.log(value.currentValue);
-
+       
         if (data === null || data.length === 0) {
             cparray.push({
                 portfolioID: this.props.id,
@@ -101,14 +107,16 @@ class index extends Component {
                 datePurchase: this.state.datePurchase,
                 quantity: this.state.quantity,
                 currentValue:value.currentValue,
-                purchaseValue:value.purchaseValue
+                purchaseValue:value.purchaseValue,
+                totalValue:total
 
             })
             localStorage.setItem("stockData", JSON.stringify(cparray));
         }
         else {
             let last_id = parseInt(data[data.length - 1].ids);
-            this.stockID = this.stockID + last_id;
+            this.stockID= this.stockID + last_id;
+            
             cparray = data;
             cparray.push({
                 portfolioID: this.props.id,
@@ -117,7 +125,8 @@ class index extends Component {
                 datePurchase: this.state.datePurchase,
                 quantity: this.state.quantity,
                 currentValue:value.currentValue,
-                purchaseValue:value.purchaseValue
+                purchaseValue:value.purchaseValue,
+                totalValue:total
 
             })
             localStorage.setItem("stockData", JSON.stringify(cparray));
@@ -154,41 +163,21 @@ class index extends Component {
         //Getting the purchase Value from the URL
         const response_purchaseValue = await fetch(purchaseValueUrl);
         const purchaseValue = await response_purchaseValue.json();
-
-
-        //const cparray = Object.assign([], this.state.stockArray);
-        // let data=JSON.parse(localStorage.getItem("stockData"));
-        const total = (this.state.quantity * currentValue).toFixed(2);
-        console.log(this.state.quantity + " and " + total);
+  
         console.log(currentValue + "and" + purchaseValue[0].uHigh);
 
         return await {
             currentValue: currentValue,
             purchaseValue: purchaseValue[0].uHigh,
         };
-        /* 
-        cparray.map((posts) => {
-            
-            if (posts.portfolioID === this.props.id && posts.ids=== id) {
-                console.log(id+ "and "+posts.ids);
-                console.log("Hello"+posts.portfolioID+" "+currentValue+" "+ purchaseValue[0].uHigh);
-                posts.currentValue = currentValue;
-                posts.purchaseValue = purchaseValue[0].uHigh;
-                posts.totalValue = total;
-            }
-        })
-        localStorage.setItem("stockData",JSON.stringify(cparray));
-        this.setState({
-            stockArray: data
-        })
-        this.calculateTotalValue();*/
+        
 
     }
     componentWillMount() {
         let data = JSON.parse(localStorage.getItem("stockData"));
 
         if (data !== null) {
-
+        
             this.setState({
                 stockArray: data
             })
