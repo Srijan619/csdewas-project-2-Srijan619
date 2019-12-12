@@ -5,6 +5,7 @@ import '../App.css';
 import Cancel from '../../assets/cancel.svg';
 import Stock from '../../components/stock';
 import Currency from '../../components/currency';
+import Graph from '../../components/graph';
 
 class index extends Component {
     constructor(props) {
@@ -25,6 +26,7 @@ class index extends Component {
             checkedItems: [],
             currencyOption: 'EUR',
             currencySign: '$',
+            showGraph:false,
 
         };
 
@@ -32,6 +34,7 @@ class index extends Component {
 
         this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
         this.hanleAdd = this.handleAdd.bind(this);
+        this.hanleShowGraph = this.handleShowGraph.bind(this);
         this.handleFormChange = this.handleFormChange.bind(this);
 
     }
@@ -71,18 +74,29 @@ class index extends Component {
     }
     calculateTotalValue(total_value) {
         const cparray = Object.assign([], this.state.stockArray);
+        let apparray = Object.assign([], this.props.usersArray);
+
+        console.log(apparray);
         let total=parseFloat(total_value);
         let data=JSON.parse(localStorage.getItem("portfolio"));
+        apparray=data;
        
         for (var i = 0; i < cparray.length; i++) {
             if(cparray[i].portfolioID===this.props.id){
             total += parseFloat(cparray[i].totalValue);}
         }
- 
-        this.setState({
-            portfolioValue: total.toFixed(2)
+        apparray.map(posts =>{
+            if(posts.id===this.props.id){
+                console.log("Success");
+                posts.portfolioValue=total.toFixed(2);
+                
+            }
         })
-        this.props.portfolioValue(total.toFixed(2));
+        localStorage.setItem("portfolio",JSON.stringify(apparray));
+        this.setState({
+            portfolioValue: total.toFixed(2),
+        
+        })
     }
     handleFormChange = (evt) => {
         this.setState({ [evt.target.name]: evt.target.value });
@@ -173,21 +187,29 @@ class index extends Component {
         
 
     }
+
+    handleShowGraph = (event) =>{
+        event.preventDefault();
+         this.setState({
+             showGraph:true
+         })
+    }
     componentWillMount() {
         let data = JSON.parse(localStorage.getItem("stockData"));
 
         if (data !== null) {
         
             this.setState({
-                stockArray: data
+                stockArray: data,
+                
             })
         }
 
     }
-
+ 
 
     render() {
-        const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption, currencySign } = this.state;
+        const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption, currencySign , showGraph} = this.state;
         const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
         return (
             <div className="container">
@@ -245,14 +267,19 @@ class index extends Component {
 
                     </div>
                     <div className="Header" style={{ width: "fit-content" }}>
-                        <span>Total value of Portfolio 1:<span id="amount"></span> {portfolioValue}</span><span>{currencySign}</span>
+                        <span>Total value of {this.props.name} :<span id="amount"></span> {this.props.portfolioValue}</span><span>{currencySign}</span>
                     </div>
                     <div className="Header">
                         <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
-                        <button onClick={""} className="button buttonAdd" type="submit">Perf graph</button>
+                        <button onClick={this.handleShowGraph} className="button buttonAdd" type="submit">Perf graph</button>
                         <button onClick={"this.handleRemove"} className="button buttonAdd" type="submit">Refresh</button>
                     </div>
                 </form>
+                <Graph
+                    show={showGraph}
+                    onClose= {(e) => this.setState({showGraph:false})}
+                    >
+                </Graph>
             </div>
         );
     }

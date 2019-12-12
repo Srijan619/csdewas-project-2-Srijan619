@@ -16,24 +16,10 @@ class App extends Component {
       portfolioValue:'',
       users: []
     };
-
-    
     this.handleSubmit = this.handleSubmit.bind(this);
    
+  }
 
-  }
-  myCallback = (dataFromChild) => {
-    let cparray = Object.assign([], this.state.users);
-    console.log(this.props.name);
-    console.log(cparray[0].id);
-    cparray.map(post=>{
-      if(post.id===this.postID){
-        console.log(post.id+" matched "+this.state.id);
-        post.portfolioValue=dataFromChild
-      }
-    })
-    this.setState({ users:cparray });
-  }
   handlePortfolioName = (event) =>{
    this.setState({
      portfolioName:event.target.value
@@ -58,8 +44,8 @@ class App extends Component {
       this.postID=this.postID+last_id;
       cparray = data;
       cparray.push({
-        id: this.postID,
-        portfolioName: name,
+         id: this.postID,
+         portfolioName: name,
          portfolioValue:this.state.portfolioValue
       })
       localStorage.setItem("portfolio", JSON.stringify(cparray));
@@ -74,12 +60,23 @@ class App extends Component {
   handleDelete = (index) => {
     event.preventDefault();
 
+
+    let stockData=JSON.parse(localStorage.getItem("stockData"));//Getting all the stock data from local storage
+ 
     let list = JSON.parse(localStorage.getItem("portfolio"));
+    stockData.map(posts =>{
+      
+      if(posts.PortfolioID===this.state.id){
+        localStorage.setItem("stockData", "");
+      }
+    })
+
     list.splice(index, 1);
     this.setState({
       users: list
     })
     localStorage.setItem("portfolio", JSON.stringify(list));
+    
     
   }
   componentWillMount() {
@@ -90,9 +87,7 @@ class App extends Component {
       users: JSON.parse(data)
     })}
   }
-  componentWillUpdate(){
-    
-  }
+
   handleFormReset = () => {
     this.setState(({
       portfolioName:""
@@ -124,8 +119,9 @@ class App extends Component {
               key={post.id}
               id={post.id}
               name={post.portfolioName}
+              portfolioValue={post.portfolioValue}
               delete={this.handleDelete.bind(this,index)}
-              portfolioValue={this.myCallback}></Portfolio>
+              usersArray={this.state.users}></Portfolio>
             )
           })}
           
