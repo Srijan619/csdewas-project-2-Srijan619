@@ -8,7 +8,8 @@
     "react-alert": "^6.0.0",
     "react-dom": "^16.12.0",
     "react-scripts": "0.9.5",
-    "react-svg": "^10.0.25"
+    "react-svg": "^10.0.25",
+    "recharts": "^2.0.0-beta.1"
   },
   "devDependencies": {
     "gh-pages": "^2.1.1"

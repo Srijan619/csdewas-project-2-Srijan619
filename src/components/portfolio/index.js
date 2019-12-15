@@ -23,10 +23,9 @@ class index extends Component {
             totalValue: '',
             portfolioValue: '',
             stockArray: [],
-            checkedItems: [],
             currencyOption: 'EUR',
-            currencySign: '$',
-            showGraph:false,
+            currencySign: '€',
+            showGraph: false,
 
         };
 
@@ -45,105 +44,156 @@ class index extends Component {
     }
     changeCurrency(curr) {
         const usd_rate = 1.10
-        const cparray = Object.assign([], this.state.stockArray);
-
+        const cparray = Object.assign([], this.state.stockArray); // Getting the stock data to convert
+        //let apparray = Object.assign([], this.props.usersArray); // Getting the portfolio value total
 
         let unit = [];
+        let portfolioTotal = [];
         switch (curr) {
             case "USD":
+                unit.length = 0;
+                portfolioTotal.length = 0;
                 cparray.map((posts) => {
-                    unit = []
-                    unit = (posts.unitValue * usd_rate).toFixed(2);
+                    let array = {
+                        "purchaseValue": (posts.purchaseValue * usd_rate).toFixed(2),
+                        "currentValue": (posts.currentValue * usd_rate).toFixed(2),
+                        "totalValue": (posts.totalValue * usd_rate).toFixed(2),
+                    }
+                    unit.push(array);
                 })
+/** 
+                apparray.map(post => {
+                    let arr = { "portfolioValue": ((post.portfolioValue * usd_rate).toFixed(2)) }
+                    portfolioTotal.push(arr);
+                })
+*/
+                this.setState({ currencySign: "$" });
+
                 break;
             case "EUR":
+                unit.length = 0;
+                portfolioTotal.length = 0;
                 cparray.map((posts) => {
-                    unit = []
-                    unit = posts.unitValue;
-                })
+
+                    let array = {
+                        "purchaseValue": (posts.purchaseValue / usd_rate).toFixed(2),
+                        "currentValue": (posts.currentValue / usd_rate).toFixed(2),
+                        "totalValue": (posts.totalValue / usd_rate).toFixed(2),
+                    }
+                    unit.push(array);
+
+                })/*  
+                apparray.map(post => {
+                    let arr = { "portfolioValue": ((post.portfolioValue / usd_rate).toFixed(2)) }
+                    portfolioTotal.push(arr);
+                })*/
+                this.setState({ currencySign: "€" });
                 break;
         }
-        cparray.map((posts) => {
-            posts.unitValue = unit
-        })
-        this.setState({
-            stockArray: cparray
-        })
+        console.log(portfolioTotal);
+        cparray.map((posts, index) => {
+            unit.map((data, id) => {
+                if (index === id) {
 
-        console.log(unit)
+                    posts.purchaseValue = data.purchaseValue,
+                        posts.currentValue = data.currentValue,
+                        posts.totalValue = data.totalValue
+
+                }
+            })
+
+        })
+/** 
+        apparray.map((posts, index) => {
+            portfolioTotal.map((data, id) => {
+                if (index === id) {
+                    posts.portfolioValue = data.portfolioValue
+                }
+            })
+
+        })*/
+
+        this.setState({
+            stockArray: cparray,
+
+        })
     }
     calculateTotalValue(total_value) {
         const cparray = Object.assign([], this.state.stockArray);
         let apparray = Object.assign([], this.props.usersArray);
 
         console.log(apparray);
-        let total=parseFloat(total_value);
-        let data=JSON.parse(localStorage.getItem("portfolio"));
-        apparray=data;
-       
+        let total = parseFloat(total_value);
+        let data = JSON.parse(localStorage.getItem("portfolio"));
+        apparray = data;
+
         for (var i = 0; i < cparray.length; i++) {
-            if(cparray[i].portfolioID===this.props.id){
-            total += parseFloat(cparray[i].totalValue);}
+            if (cparray[i].portfolioID === this.props.id) {
+                total += parseFloat(cparray[i].totalValue);
+            }
         }
-        apparray.map(posts =>{
-            if(posts.id===this.props.id){
-                console.log("Success");
-                posts.portfolioValue=total.toFixed(2);
-                
+        apparray.map(posts => {
+            if (posts.id === this.props.id) {
+                posts.portfolioValue = total.toFixed(2);
             }
         })
-        localStorage.setItem("portfolio",JSON.stringify(apparray));
-        this.setState({
-            portfolioValue: total.toFixed(2),
-        
-        })
+
+        localStorage.setItem("portfolio", JSON.stringify(apparray));
+
+
     }
     handleFormChange = (evt) => {
         this.setState({ [evt.target.name]: evt.target.value });
     }
-     handleAdd = async (event) => {
+    handleAdd = async (event) => {
         event.preventDefault();
 
         this.stockID = this.stockID + 1;
 
         let cparray = Object.assign([], this.state.stockArray);
         let data = JSON.parse(localStorage.getItem("stockData"));
-        var value = await this.fetchingData();
-        const total = (this.state.quantity * value.currentValue).toFixed(2);
-        this.calculateTotalValue(total);
-        console.log(value.currentValue);
-       
-        if (data === null || data.length === 0) {
-            cparray.push({
-                portfolioID: this.props.id,
-                ids: this.stockID,
-                stockName: this.state.stockName,
-                datePurchase: this.state.datePurchase,
-                quantity: this.state.quantity,
-                currentValue:value.currentValue,
-                purchaseValue:value.purchaseValue,
-                totalValue:total
+        try {
+            var value = await this.fetchingData();
+            const total = (this.state.quantity * value.currentValue).toFixed(2);
+            this.calculateTotalValue(total);
+            console.log(value.currentValue);
 
-            })
-            localStorage.setItem("stockData", JSON.stringify(cparray));
+            if (data === null || data.length === 0) {
+                cparray.push({
+                    portfolioID: this.props.id,
+                    ids: this.stockID,
+                    stockName: this.state.stockName,
+                    datePurchase: this.state.datePurchase,
+                    quantity: this.state.quantity,
+                    currentValue: value.currentValue,
+                    purchaseValue: value.purchaseValue,
+                    totalValue: total
+
+                })
+                localStorage.setItem("stockData", JSON.stringify(cparray));
+            }
+            else {
+                let last_id = parseInt(data[data.length - 1].ids);
+                this.stockID = this.stockID + last_id;
+
+                cparray = data;
+                cparray.push({
+                    portfolioID: this.props.id,
+                    ids: this.stockID,
+                    stockName: this.state.stockName,
+                    datePurchase: this.state.datePurchase,
+                    quantity: this.state.quantity,
+                    currentValue: value.currentValue,
+                    purchaseValue: value.purchaseValue,
+                    totalValue: total
+
+                })
+                localStorage.setItem("stockData", JSON.stringify(cparray));
+            }
+
         }
-        else {
-            let last_id = parseInt(data[data.length - 1].ids);
-            this.stockID= this.stockID + last_id;
-            
-            cparray = data;
-            cparray.push({
-                portfolioID: this.props.id,
-                ids: this.stockID,
-                stockName: this.state.stockName,
-                datePurchase: this.state.datePurchase,
-                quantity: this.state.quantity,
-                currentValue:value.currentValue,
-                purchaseValue:value.purchaseValue,
-                totalValue:total
-
-            })
-            localStorage.setItem("stockData", JSON.stringify(cparray));
+        catch (error) {
+            alert("Invalid format of data/ check that the dates are not the weekends? ");
         }
 
         this.setState({
@@ -177,39 +227,39 @@ class index extends Component {
         //Getting the purchase Value from the URL
         const response_purchaseValue = await fetch(purchaseValueUrl);
         const purchaseValue = await response_purchaseValue.json();
-  
+
         console.log(currentValue + "and" + purchaseValue[0].uHigh);
 
         return await {
             currentValue: currentValue,
             purchaseValue: purchaseValue[0].uHigh,
         };
-        
+
 
     }
 
-    handleShowGraph = (event) =>{
+    handleShowGraph = (event) => {
         event.preventDefault();
-         this.setState({
-             showGraph:true
-         })
+        this.setState({
+            showGraph: true
+        })
     }
     componentWillMount() {
         let data = JSON.parse(localStorage.getItem("stockData"));
 
         if (data !== null) {
-        
+
             this.setState({
                 stockArray: data,
-                
+
             })
         }
 
     }
- 
+
 
     render() {
-        const { stockArray, stockName, quantity, datePurchase, portfolioValue, currencyOption, currencySign , showGraph} = this.state;
+        const { stockArray, stockName, quantity, datePurchase, currencyOption, currencySign, showGraph } = this.state;
         const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
         return (
             <div className="container">
@@ -277,8 +327,11 @@ class index extends Component {
                 </form>
                 <Graph
                     show={showGraph}
-                    onClose= {(e) => this.setState({showGraph:false})}
-                    >
+                    portfolioName={this.props.name}
+                    portfolioId={this.props.id}
+                    stockArray={stockArray}
+                    onClose={(e) => this.setState({ showGraph: false })}
+                >
                 </Graph>
             </div>
         );

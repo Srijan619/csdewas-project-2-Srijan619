@@ -4,8 +4,9 @@ import './App.css';
 
 
 
+
 class App extends Component {
-  userData;
+
   constructor(props) {
     super(props);
     this.postID=0;
@@ -17,7 +18,6 @@ class App extends Component {
       users: []
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-   
   }
 
   handlePortfolioName = (event) =>{
@@ -25,6 +25,7 @@ class App extends Component {
      portfolioName:event.target.value
    })
   }
+
   handleSubmit = (event) => {
     event.preventDefault();
     this.postID = this.postID + 1;
@@ -60,17 +61,8 @@ class App extends Component {
   handleDelete = (index) => {
     event.preventDefault();
 
-
-    let stockData=JSON.parse(localStorage.getItem("stockData"));//Getting all the stock data from local storage
- 
     let list = JSON.parse(localStorage.getItem("portfolio"));
-    stockData.map(posts =>{
-      
-      if(posts.PortfolioID===this.state.id){
-        localStorage.setItem("stockData", "");
-      }
-    })
-
+    
     list.splice(index, 1);
     this.setState({
       users: list
