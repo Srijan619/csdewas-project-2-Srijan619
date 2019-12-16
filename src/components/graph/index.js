@@ -13,10 +13,11 @@ class Index extends Component {
         this.state = {
             startingDate:"",
             endingDate:"",
+            fetchedValue:[]
         };
 
         this.handleChange=this.handleChange.bind(this);
-        this.calculateDays=this.calculateDays.bind(this);
+        this.graphDraw=this.graphDraw.bind(this);
     }
 
     handleChange(evt){
@@ -37,10 +38,43 @@ class Index extends Component {
         }else{
         return Difference_In_Days;}
     }
+    
+    graphDraw = async (event) => {
+        var fetchedValue= await this.fetchingData();
+       
+        console.log(fetchedValue.AAL);
+
+        this.setState({
+            fetchedValue:fetchedValue
+        })
+        
+    }
+    
+    async fetchingData() {
+        const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
+        const url = "https://cloud.iexapis.com//stable/stock/market/batch?symbols=";
+        const range="5d";
+        const stockNames = "nok,aal";
+        const fetchDataUrl = url + stockNames + "&types=chart&filter=uClose,date,label&range=" + range+"&last=5&token="+apiKey;
+        
+
+        //Getting the current Value from the URL
+
+        const response_currentValue = await fetch(fetchDataUrl);
+        const fetchedValue = await response_currentValue.json();
+       
+
+        return await 
+           fetchedValue
+        
+    }
+
     render() {
         var stockArray = this.props.stockArray //Getting all the stock array
 
         const portfolioId = this.props.portfolioId //Getting portfolioID to filter data
+
+       
       
       //Getting distinct names not done yet
         /*        const distinctNames = [];
@@ -85,7 +119,9 @@ class Index extends Component {
                                 }
                             })}</div>
 
-                        <Chart></Chart>
+                        <Chart
+                        fetchedValue={this.state.fetchedValue}
+                        ></Chart>
                     </div>
                     <div className="timeCollection">
                         <div>
@@ -96,7 +132,7 @@ class Index extends Component {
                             <span>Ending time </span>
                             <input type="date" name="endingDate"  value={this.value} onChange={this.handleChange}></input>
                         </div>
-                        <button disabled={!isEnabled}  className="buttonAdd" onClick= {this.calculateDays}>Caclulate</button>
+                        <button /*disabled={!isEnabled}*/  className="buttonAdd" onClick= {this.graphDraw}>Caclulate</button>
                     </div>
                 </div>
 
@@ -106,8 +142,6 @@ class Index extends Component {
         if (!this.props.show) {
             dialog = null;
         }
-
-
         return (
             <div>
                 {dialog}

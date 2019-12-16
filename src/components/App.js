@@ -14,7 +14,6 @@ class App extends Component {
     this.state = {
       id:"",
       portfolioName:'',
-      portfolioValue:'',
       users: []
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -36,7 +35,7 @@ class App extends Component {
       cparray.push({
         id: this.postID,
         portfolioName: name,
-        portfolioValue:this.state.portfolioValue
+  
       })
       localStorage.setItem("portfolio", JSON.stringify(cparray));
     }
@@ -47,7 +46,6 @@ class App extends Component {
       cparray.push({
          id: this.postID,
          portfolioName: name,
-         portfolioValue:this.state.portfolioValue
       })
       localStorage.setItem("portfolio", JSON.stringify(cparray));
     }
@@ -58,10 +56,20 @@ class App extends Component {
     this.handleFormReset()
 
   }
-  handleDelete = (index) => {
+  handleDelete = (index,id) => {
     event.preventDefault();
-
+  
+    console.log(id);
     let list = JSON.parse(localStorage.getItem("portfolio"));
+
+    let stockData=JSON.parse(localStorage.getItem("stockData"));
+    let modifiedStockData=[];
+   
+    if(stockData!==null){
+    modifiedStockData = stockData.filter(stock => {
+      return stock.portfolioID !==id;
+    });}
+    localStorage.setItem("stockData",JSON.stringify(modifiedStockData));
     
     list.splice(index, 1);
     this.setState({
@@ -111,8 +119,7 @@ class App extends Component {
               key={post.id}
               id={post.id}
               name={post.portfolioName}
-              portfolioValue={post.portfolioValue}
-              delete={this.handleDelete.bind(this,index)}
+              delete={this.handleDelete.bind(this,index,post.id)}
               usersArray={this.state.users}></Portfolio>
             )
           })}

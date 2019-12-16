@@ -21,15 +21,16 @@ class index extends Component {
             currentValue: '',
             quantity: '',
             totalValue: '',
-            portfolioValue: '',
+            portfolioValue:'',
             stockArray: [],
             currencyOption: 'EUR',
             currencySign: '€',
             showGraph: false,
 
         };
-
+       
         this.state = this.initialState
+        this.state.portfolioValue = this.calculateTotalValue();
 
         this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
         this.hanleAdd = this.handleAdd.bind(this);
@@ -45,7 +46,7 @@ class index extends Component {
     changeCurrency(curr) {
         const usd_rate = 1.10
         const cparray = Object.assign([], this.state.stockArray); // Getting the stock data to convert
-        //let apparray = Object.assign([], this.props.usersArray); // Getting the portfolio value total
+        const apparray = Object.assign([], this.props.usersArray); // Getting the portfolio value total
 
         let unit = [];
         let portfolioTotal = [];
@@ -61,12 +62,12 @@ class index extends Component {
                     }
                     unit.push(array);
                 })
-/** 
+
                 apparray.map(post => {
                     let arr = { "portfolioValue": ((post.portfolioValue * usd_rate).toFixed(2)) }
                     portfolioTotal.push(arr);
                 })
-*/
+
                 this.setState({ currencySign: "$" });
 
                 break;
@@ -82,15 +83,15 @@ class index extends Component {
                     }
                     unit.push(array);
 
-                })/*  
+                }) 
                 apparray.map(post => {
                     let arr = { "portfolioValue": ((post.portfolioValue / usd_rate).toFixed(2)) }
                     portfolioTotal.push(arr);
-                })*/
+                })
                 this.setState({ currencySign: "€" });
                 break;
         }
-        console.log(portfolioTotal);
+       
         cparray.map((posts, index) => {
             unit.map((data, id) => {
                 if (index === id) {
@@ -103,7 +104,7 @@ class index extends Component {
             })
 
         })
-/** 
+
         apparray.map((posts, index) => {
             portfolioTotal.map((data, id) => {
                 if (index === id) {
@@ -111,34 +112,46 @@ class index extends Component {
                 }
             })
 
-        })*/
-
+        })
+        console.log(apparray);
         this.setState({
             stockArray: cparray,
-
         })
+      
     }
-    calculateTotalValue(total_value) {
-        const cparray = Object.assign([], this.state.stockArray);
-        let apparray = Object.assign([], this.props.usersArray);
+    calculateTotalValue() {
+        let cparray = Object.assign([], this.state.stockArray);
+        let data = JSON.parse(localStorage.getItem("stockData"));
 
-        console.log(apparray);
-        let total = parseFloat(total_value);
-        let data = JSON.parse(localStorage.getItem("portfolio"));
-        apparray = data;
+        cparray=data;
+        console.log(cparray);
+        if(cparray!==null){
+       // let apparray = Object.assign([], this.props.usersArray);
+
+
+      
+        let total = 0;
+     //   let data = JSON.parse(localStorage.getItem("portfolio"));
+       // apparray = data;
 
         for (var i = 0; i < cparray.length; i++) {
             if (cparray[i].portfolioID === this.props.id) {
                 total += parseFloat(cparray[i].totalValue);
             }
         }
+
+        return total;}
+        /*
         apparray.map(posts => {
             if (posts.id === this.props.id) {
                 posts.portfolioValue = total.toFixed(2);
             }
         })
-
-        localStorage.setItem("portfolio", JSON.stringify(apparray));
+       
+       this.setState({
+           portfolioValue:total.toFixed(2)
+       })
+        localStorage.setItem("portfolio", JSON.stringify(apparray));*/
 
 
     }
@@ -151,12 +164,11 @@ class index extends Component {
         this.stockID = this.stockID + 1;
 
         let cparray = Object.assign([], this.state.stockArray);
+       
         let data = JSON.parse(localStorage.getItem("stockData"));
         try {
             var value = await this.fetchingData();
             const total = (this.state.quantity * value.currentValue).toFixed(2);
-            this.calculateTotalValue(total);
-            console.log(value.currentValue);
 
             if (data === null || data.length === 0) {
                 cparray.push({
@@ -170,6 +182,7 @@ class index extends Component {
                     totalValue: total
 
                 })
+            
                 localStorage.setItem("stockData", JSON.stringify(cparray));
             }
             else {
@@ -198,6 +211,7 @@ class index extends Component {
 
         this.setState({
             stockArray: JSON.parse(localStorage.getItem("stockData")),
+            portfolioValue:this.calculateTotalValue()
         })
     }
 
@@ -206,8 +220,12 @@ class index extends Component {
         let list = JSON.parse(localStorage.getItem("stockData"));
         list.splice(index, 1);
         this.setState({
-            stockArray: list
+            stockArray: list,
         })
+
+        this.setState((state) =>({
+            portfolioValue:this.calculateTotalValue()
+        }));
         localStorage.setItem("stockData", JSON.stringify(list));
     }
 
@@ -254,9 +272,9 @@ class index extends Component {
 
             })
         }
-
     }
 
+    shou
 
     render() {
         const { stockArray, stockName, quantity, datePurchase, currencyOption, currencySign, showGraph } = this.state;
@@ -317,7 +335,7 @@ class index extends Component {
 
                     </div>
                     <div className="Header" style={{ width: "fit-content" }}>
-                        <span>Total value of {this.props.name} :<span id="amount"></span> {this.props.portfolioValue}</span><span>{currencySign}</span>
+                        <span>Total value of {this.props.name} :<span id="amount"></span> {this.state.portfolioValue}</span><span>{currencySign}</span>
                     </div>
                     <div className="Header">
                         <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
