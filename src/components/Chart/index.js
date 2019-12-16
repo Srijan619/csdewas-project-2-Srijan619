@@ -35,16 +35,18 @@ const data = [
 
 class index extends Component {
   render() {
+   
     return (
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={this.props.fetchedValue}
+  
+      <ResponsiveContainer width="80%" height={400}>
+        <LineChart data={this.props.fetchedValue.NOK}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
 
-          <XAxis dataKey="name" />
+          <XAxis dataKey={this.props.label} />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="NOK" stroke="#8884d8" />
+          <Line type="monotone" dataKey={this.props.uClose} stroke="#8884d8" />
           <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
         </LineChart>
       </ResponsiveContainer>

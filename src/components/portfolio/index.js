@@ -46,14 +46,15 @@ class index extends Component {
     changeCurrency(curr) {
         const usd_rate = 1.10
         const cparray = Object.assign([], this.state.stockArray); // Getting the stock data to convert
-        const apparray = Object.assign([], this.props.usersArray); // Getting the portfolio value total
-
+   
+    
         let unit = [];
-        let portfolioTotal = [];
+        const portfolioTotal = this.state.portfolioValue;
+
         switch (curr) {
             case "USD":
                 unit.length = 0;
-                portfolioTotal.length = 0;
+               
                 cparray.map((posts) => {
                     let array = {
                         "purchaseValue": (posts.purchaseValue * usd_rate).toFixed(2),
@@ -63,17 +64,16 @@ class index extends Component {
                     unit.push(array);
                 })
 
-                apparray.map(post => {
-                    let arr = { "portfolioValue": ((post.portfolioValue * usd_rate).toFixed(2)) }
-                    portfolioTotal.push(arr);
-                })
-
-                this.setState({ currencySign: "$" });
+                this.setState({
+                     currencySign: "$",
+                     portfolioValue:(portfolioTotal*usd_rate).toFixed(2)
+                    
+                    }
+                     );
 
                 break;
             case "EUR":
                 unit.length = 0;
-                portfolioTotal.length = 0;
                 cparray.map((posts) => {
 
                     let array = {
@@ -84,11 +84,9 @@ class index extends Component {
                     unit.push(array);
 
                 }) 
-                apparray.map(post => {
-                    let arr = { "portfolioValue": ((post.portfolioValue / usd_rate).toFixed(2)) }
-                    portfolioTotal.push(arr);
-                })
-                this.setState({ currencySign: "€" });
+                this.setState({ 
+                          currencySign: "€" ,
+                          portfolioValue:(portfolioTotal/usd_rate).toFixed(2)}, );
                 break;
         }
        
@@ -96,7 +94,7 @@ class index extends Component {
             unit.map((data, id) => {
                 if (index === id) {
 
-                    posts.purchaseValue = data.purchaseValue,
+                        posts.purchaseValue = data.purchaseValue,
                         posts.currentValue = data.currentValue,
                         posts.totalValue = data.totalValue
 
@@ -104,16 +102,6 @@ class index extends Component {
             })
 
         })
-
-        apparray.map((posts, index) => {
-            portfolioTotal.map((data, id) => {
-                if (index === id) {
-                    posts.portfolioValue = data.portfolioValue
-                }
-            })
-
-        })
-        console.log(apparray);
         this.setState({
             stockArray: cparray,
         })
@@ -126,13 +114,8 @@ class index extends Component {
         cparray=data;
         console.log(cparray);
         if(cparray!==null){
-       // let apparray = Object.assign([], this.props.usersArray);
-
-
-      
+   
         let total = 0;
-     //   let data = JSON.parse(localStorage.getItem("portfolio"));
-       // apparray = data;
 
         for (var i = 0; i < cparray.length; i++) {
             if (cparray[i].portfolioID === this.props.id) {
@@ -140,19 +123,7 @@ class index extends Component {
             }
         }
 
-        return total;}
-        /*
-        apparray.map(posts => {
-            if (posts.id === this.props.id) {
-                posts.portfolioValue = total.toFixed(2);
-            }
-        })
-       
-       this.setState({
-           portfolioValue:total.toFixed(2)
-       })
-        localStorage.setItem("portfolio", JSON.stringify(apparray));*/
-
+        return total.toFixed(2);}
 
     }
     handleFormChange = (evt) => {

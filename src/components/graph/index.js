@@ -42,10 +42,10 @@ class Index extends Component {
     graphDraw = async (event) => {
         var fetchedValue= await this.fetchingData();
        
-        console.log(fetchedValue.AAL);
+        console.log(fetchedValue.NOK);
 
         this.setState({
-            fetchedValue:fetchedValue
+            fetchedValue:fetchedValue.NOK
         })
         
     }
@@ -54,7 +54,7 @@ class Index extends Component {
         const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
         const url = "https://cloud.iexapis.com//stable/stock/market/batch?symbols=";
         const range="5d";
-        const stockNames = "nok,aal";
+        const stockNames = "nok";
         const fetchDataUrl = url + stockNames + "&types=chart&filter=uClose,date,label&range=" + range+"&last=5&token="+apiKey;
         
 
@@ -73,7 +73,7 @@ class Index extends Component {
         var stockArray = this.props.stockArray //Getting all the stock array
 
         const portfolioId = this.props.portfolioId //Getting portfolioID to filter data
-
+       
        
       
       //Getting distinct names not done yet
@@ -88,7 +88,7 @@ class Index extends Component {
                 });
             }
         } */
-        const { startingDate,endingDate} = this.state;
+        const { startingDate,endingDate,fetchedValue} = this.state;
         const isEnabled = (startingDate.length && endingDate.length ) > 0;
      
         let dialog = (
@@ -118,10 +118,18 @@ class Index extends Component {
                                         )
                                 }
                             })}</div>
+                      {fetchedValue.map((post, index) => {
+                             
+                             return (
+                                 <Chart
+                                     key={post.date}
+                                     uClose={post.uClose}
+                                     label={post.label}
+                                 ></Chart>
 
-                        <Chart
-                        fetchedValue={this.state.fetchedValue}
-                        ></Chart>
+                             )
+                     })}
+                        
                     </div>
                     <div className="timeCollection">
                         <div>
