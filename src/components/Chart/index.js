@@ -1,69 +1,55 @@
 import React, { Component } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './chart.css';
-
-//<Line type="monotone" dataKey="uClose"  name="NOK" stroke="#8884d8" />
-
-const data = [
-  {
-    "NOK": 27.49,
-    "name": "Dec 12"
-  },
-  {
-    "NOK": 28.49,
-    "name": "Dec 13"
-  },
-  {
-    "NOK": 29.49,
-    "name": "Dec 14"
-  },
-  {
-    "NOK": 25.49,
-    "name": "Dec 15"
-  },
-  {
-    "NOK": 4.49,
-    "name": "Dec 16"
-  },
-  {
-    "NOK": 17.49,
-    "name": "Dec 17"
-  },
-  {
-    "NOK": 18.49,
-    "name": "Dec 18"
-  }
-]
 
 class index extends Component {
 
+  filterGraphData() {
+    const datas = this.props.dataToSend;
+    const stockNames = this.props.stockNames;
+
+    let custom_array = []
+    if(custom_array!==null){
+      custom_array=[];
+    }
+    for (var i = 0; i < stockNames.length; i++) {
+      let upperCase = stockNames[i].toUpperCase();
+      let formatData = {
+        name: upperCase,
+        data: datas[upperCase].chart
+      }
+     
+      custom_array.push(formatData);
+    }
+   return custom_array;
+  }
+   get_random_color() {
+    function c() {
+      var hex = Math.floor(Math.random()*256).toString(16);
+      return ("0"+String(hex)).substr(-2); // pad with zero
+    }
+    return "#"+c()+c()+c();
+  }
+ 
+
   render() {
-
-
-    const datas = Object.assign([], this.props.dataToSend);
-
+    const filteredArray=this.filterGraphData()
+    const randomColor=this.get_random_color()
+   
     return (
-
       <ResponsiveContainer width="80%" height={400}>
-
-
         <LineChart
-          data={datas}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
 
-          <XAxis dataKey="label" tick={false} />
-          <YAxis />
+          <XAxis dataKey="label" tick={false}  allowDuplicatedCategory={false}  />
+          <YAxis dataKey="uClose" />
           <Tooltip />
           <Legend />
-
-          {
-            datas.map(data => {
-              <Line type="linear" dataKey={data["chart"]["uClose"]} name={data} stroke="#8884d8" />
-            })
-          }
-
+          {console.log(filteredArray)}
+          {filteredArray.map(item => (
+            <Line type="monotone" dataKey="uClose" data={item.data} name={item.name} key={item.name} stroke={randomColor}/>
+            ))}
         </LineChart>
-
       </ResponsiveContainer>
 
     );

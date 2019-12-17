@@ -241,12 +241,9 @@ class index extends Component {
 
             this.setState({
                 stockArray: data,
-
             })
         }
     }
-
-    shou
 
     render() {
         const { stockArray, stockName, quantity, datePurchase, currencyOption, currencySign, showGraph } = this.state;
