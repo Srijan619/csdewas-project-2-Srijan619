@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import './chart.css';
+
+//<Line type="monotone" dataKey="uClose"  name="NOK" stroke="#8884d8" />
 
 const data = [
   {
@@ -34,21 +36,34 @@ const data = [
 ]
 
 class index extends Component {
+
   render() {
-   
+
+
+    const datas = Object.assign([], this.props.dataToSend);
+
     return (
-  
+
       <ResponsiveContainer width="80%" height={400}>
-        <LineChart data={this.props.fetchedValue.NOK}
+
+
+        <LineChart
+          data={datas}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
 
-          <XAxis dataKey={this.props.label} />
+          <XAxis dataKey="label" tick={false} />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey={this.props.uClose} stroke="#8884d8" />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+
+          {
+            datas.map(data => {
+              <Line type="linear" dataKey={data["chart"]["uClose"]} name={data} stroke="#8884d8" />
+            })
+          }
+
         </LineChart>
+
       </ResponsiveContainer>
 
     );

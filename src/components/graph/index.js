@@ -11,86 +11,116 @@ class Index extends Component {
         super(props);
 
         this.state = {
-            startingDate:"",
-            endingDate:"",
-            fetchedValue:[]
+            timeSelected: "5d",
+            fetchedValue: [],
+           
         };
 
-        this.handleChange=this.handleChange.bind(this);
-        this.graphDraw=this.graphDraw.bind(this);
+        this.handleTimeChange = this.handleTimeChange.bind(this);
+        this.graphDraw = this.graphDraw.bind(this);
     }
 
-    handleChange(evt){
-        this.setState({ [evt.target.name]: evt.target.value });
-      
-    }
-    calculateDays(){
-        let startDate=this.state.startingDate;
-       
-        let endDate=this.state.endingDate;
+
+    calculateDays() {
+        let startDate = this.state.startingDate;
+
+        let endDate = this.state.endingDate;
         var Difference_In_Days;
-        if(startDate && endDate!==null){
-            var Difference_In_Time = new Date(endDate).getTime()- new Date(startDate).getTime() ; 
-            Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24); 
+        if (startDate && endDate !== null) {
+            var Difference_In_Time = new Date(endDate).getTime() - new Date(startDate).getTime();
+            Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
         }
-        if(Difference_In_Days<=0){
+        if (Difference_In_Days <= 0) {
             alert("Wrong formatted date")
-        }else{
-        return Difference_In_Days;}
+        } else {
+            return Difference_In_Days;
+        }
     }
-    
-    graphDraw = async (event) => {
-        var fetchedValue= await this.fetchingData();
-       
-        console.log(fetchedValue.NOK);
 
-        this.setState({
-            fetchedValue:fetchedValue.NOK
-        })
+    graphDraw = async (event) => {
+        var fetchedValue = await this.fetchingData();
         
+        const stockSymbol=this.filterStockNames();
+        console.log(typeof(fetchedValue.NOK.chart))
+        console.log(fetchedValue)   
+
+        let graphData=[];
+      
+        /** 
+        for(var symbol in fetchedValue){
+            for(var chart in symbol){
+                console.log(chart)
+                for(var item in chart){
+                    console.log(item);
+                    graphData.push({
+                        date:item["label"],
+                        stockName:item["uClose"],
+        
+                    })
+                }
+              
+            }
+         
+        }*/
+        const data= await Object.keys(fetchedValue).map(key => (
+            Object.keys(key["chart"]).map((chart, i) =>{
+               console.log(chart);
+            })
+         ));
+     
+        
+        this.setState({
+            fetchedValue: fetchedValue
+        })
+
     }
     
     async fetchingData() {
-        const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
-        const url = "https://cloud.iexapis.com//stable/stock/market/batch?symbols=";
-        const range="5d";
-        const stockNames = "nok";
-        const fetchDataUrl = url + stockNames + "&types=chart&filter=uClose,date,label&range=" + range+"&last=5&token="+apiKey;
-        
+        const test_apiKey = "Tpk_3f5f6e08c5864242aa0503c8d2ef115a";
+        const test_url = "https://sandbox.iexapis.com/stable/stock/market/batch?symbols=";
+        const range = this.state.timeSelected;
+        const stockNames = this.filterStockNames().toString();
+        const fetchDataUrl = test_url + stockNames + "&types=chart&filter=uClose,date,label&range=" + range + "&last=5&token=" + test_apiKey;
+
 
         //Getting the current Value from the URL
 
         const response_currentValue = await fetch(fetchDataUrl);
         const fetchedValue = await response_currentValue.json();
-       
 
-        return await 
-           fetchedValue
-        
+
+        return await
+            fetchedValue
+
+    }
+    filterStockNames(){
+        let stockNames = [];
+        const filterData = this.props.stockArray.map(post => {
+            if (post.portfolioID == this.props.portfolioId) {
+                stockNames.push(post.stockName);
+            }
+        })
+
+        let unique_stockname = [...new Set(stockNames)]
+
+       return unique_stockname;
+    }
+    handleTimeChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+    componentWillMount() {
+
+        this.graphDraw();
     }
 
     render() {
         var stockArray = this.props.stockArray //Getting all the stock array
-
         const portfolioId = this.props.portfolioId //Getting portfolioID to filter data
-       
-       
+        
       
-      //Getting distinct names not done yet
-        /*        const distinctNames = [];
-        const map = new Map();
-        for (const item of stockArray) {
-            if (!map.has(item.stockName)) {
-                map.set(item.stockName, true);    // set any value to Map
-                distinctNames.push({
-                    id: item.portfolioID,
-                    name: item.stockName
-                });
-            }
-        } */
-        const { startingDate,endingDate,fetchedValue} = this.state;
-        const isEnabled = (startingDate.length && endingDate.length ) > 0;
-     
+        const { fetchedValue } = this.state;
+
+        
         let dialog = (
             <div className="mainContainer">
                 <div className="graphContainer">
@@ -102,45 +132,40 @@ class Index extends Component {
                     <br></br>
                     <div className="graphCollection">
                         <div className="stockCollection">
-                           
-                            {stockArray.map((post, index) => {
-                                //const distinctNames=[...new Set(stockArray.map((x,y) => {(x.stockName,y.portfolioID)}))];
-                                //const distinctID=[...new Set(stockArray.map(x => x.portfolioID))];
 
-                                 
-                                if (post !== null && post.portfolioID === portfolioId) {
-                                        return (
-                                            <StockName
-                                                key={post.ids}
-                                                stockName={post.stockName}
-                                            ></StockName>
+                            {this.filterStockNames().map((post) => {
+                                return (
+                                    <StockName
+                                        stockName={post}
+                                    ></StockName>
+                                )
+                            })
+                            }</div>
 
-                                        )
-                                }
-                            })}</div>
-                      {fetchedValue.map((post, index) => {
-                             
-                             return (
-                                 <Chart
-                                     key={post.date}
-                                     uClose={post.uClose}
-                                     label={post.label}
-                                 ></Chart>
+                        <Chart
+                            dataToSend={fetchedValue}
+                        ></Chart>
 
-                             )
-                     })}
-                        
+
+
+
+
+
                     </div>
                     <div className="timeCollection">
                         <div>
-                            <span>Starting time </span>
-                            <input type="date" name="startingDate" value={this.value} onChange={this.handleChange}></input>
+                            <span>Time Interval </span>
+                            <select name="timeSelected" onChange={this.handleTimeChange}>
+                                <option value="5d">5 days</option>
+                                <option value="1m">1 month</option>
+                                <option value="3m">3 month</option>
+                                <option value="6m">6 month</option>
+                                <option value="1y">1 year</option>
+                                <option value="2y">2 year</option>
+                                <option value="5y">5 year</option>
+                            </select>
                         </div>
-                        <div>
-                            <span>Ending time </span>
-                            <input type="date" name="endingDate"  value={this.value} onChange={this.handleChange}></input>
-                        </div>
-                        <button /*disabled={!isEnabled}*/  className="buttonAdd" onClick= {this.graphDraw}>Caclulate</button>
+                        <button /*disabled={!isEnabled}*/ className="buttonAdd" onClick={this.graphDraw}>Draw</button>
                     </div>
                 </div>
 

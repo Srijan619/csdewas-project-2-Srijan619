@@ -112,7 +112,7 @@ class index extends Component {
         let data = JSON.parse(localStorage.getItem("stockData"));
 
         cparray=data;
-        console.log(cparray);
+       
         if(cparray!==null){
    
         let total = 0;
@@ -181,6 +181,7 @@ class index extends Component {
         }
 
         this.setState({
+            
             stockArray: JSON.parse(localStorage.getItem("stockData")),
             portfolioValue:this.calculateTotalValue()
         })
@@ -201,8 +202,8 @@ class index extends Component {
     }
 
     async fetchingData() {
-        const apiKey = "pk_bc5ad08f5b3a4b7ab7f0e1eff882d6de";
-        const url = "https://cloud.iexapis.com//stable/stock/";
+        const apiKey = "Tpk_3f5f6e08c5864242aa0503c8d2ef115a";
+        const url = "https://sandbox.iexapis.com/stable/stock/";
         const dateFormat = this.state.datePurchase.split("-").join("");
         const stockName = this.state.stockName;
         const currentValueUrl = url + stockName + "/quote/latestPrice?token=" + apiKey;
@@ -217,7 +218,7 @@ class index extends Component {
         const response_purchaseValue = await fetch(purchaseValueUrl);
         const purchaseValue = await response_purchaseValue.json();
 
-        console.log(currentValue + "and" + purchaseValue[0].uHigh);
+        
 
         return await {
             currentValue: currentValue,

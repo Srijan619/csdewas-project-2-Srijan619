@@ -59,7 +59,7 @@ class App extends Component {
   handleDelete = (index,id) => {
     event.preventDefault();
   
-    console.log(id);
+    
     let list = JSON.parse(localStorage.getItem("portfolio"));
 
     let stockData=JSON.parse(localStorage.getItem("stockData"));
