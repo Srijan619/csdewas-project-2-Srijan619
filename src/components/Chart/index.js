@@ -12,15 +12,21 @@ class index extends Component {
     if(custom_array!==null){
       custom_array=[];
     }
+    console.log(datas)
+    console.log(typeof(stockNames))
+   
+    if(datas!==null){
     for (var i = 0; i < stockNames.length; i++) {
       let upperCase = stockNames[i].toUpperCase();
+      console.log(upperCase)
       let formatData = {
         name: upperCase,
+        color:this.get_random_color(),
         data: datas[upperCase].chart
       }
      
       custom_array.push(formatData);
-    }
+    }}
    return custom_array;
   }
    get_random_color() {
@@ -34,7 +40,6 @@ class index extends Component {
 
   render() {
     const filteredArray=this.filterGraphData()
-    const randomColor=this.get_random_color()
    
     return (
       <ResponsiveContainer width="80%" height={400}>
@@ -45,9 +50,9 @@ class index extends Component {
           <YAxis dataKey="uClose" />
           <Tooltip />
           <Legend />
-          {console.log(filteredArray)}
+        
           {filteredArray.map(item => (
-            <Line type="monotone" dataKey="uClose" data={item.data} name={item.name} key={item.name} stroke={randomColor}/>
+            <Line type="monotone" dataKey="uClose" data={item.data} name={item.name} key={item.name} stroke={item.color}/>
             ))}
         </LineChart>
       </ResponsiveContainer>

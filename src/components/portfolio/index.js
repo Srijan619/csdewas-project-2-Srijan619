@@ -181,10 +181,11 @@ class index extends Component {
         }
 
         this.setState({
-            
             stockArray: JSON.parse(localStorage.getItem("stockData")),
             portfolioValue:this.calculateTotalValue()
         })
+
+       
     }
 
     handleDelete = (index) => {
@@ -312,14 +313,15 @@ class index extends Component {
                         <button onClick={"this.handleRemove"} className="button buttonAdd" type="submit">Refresh</button>
                     </div>
                 </form>
+
                 <Graph
                     show={showGraph}
                     portfolioName={this.props.name}
                     portfolioId={this.props.id}
                     stockArray={stockArray}
                     onClose={(e) => this.setState({ showGraph: false })}
-                >
-                </Graph>
+                />
+                
             </div>
         );
     }
