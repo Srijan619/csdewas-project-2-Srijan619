@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import ReactSVG from 'react-svg'
 import './portfolio.css';
 import '../App.css';
@@ -21,14 +21,14 @@ class index extends Component {
             currentValue: '',
             quantity: '',
             totalValue: '',
-            portfolioValue:'',
+            portfolioValue: '',
             stockArray: [],
             currencyOption: 'EUR',
             currencySign: '€',
             showGraph: false,
 
         };
-       
+
         this.state = this.initialState
         this.state.portfolioValue = this.calculateTotalValue();
 
@@ -46,15 +46,15 @@ class index extends Component {
     changeCurrency(curr) {
         const usd_rate = 1.10
         const cparray = Object.assign([], this.state.stockArray); // Getting the stock data to convert
-   
-    
+
+
         let unit = [];
         const portfolioTotal = this.state.portfolioValue;
 
         switch (curr) {
             case "USD":
                 unit.length = 0;
-               
+
                 cparray.map((posts) => {
                     let array = {
                         "purchaseValue": (posts.purchaseValue * usd_rate).toFixed(2),
@@ -65,11 +65,11 @@ class index extends Component {
                 })
 
                 this.setState({
-                     currencySign: "$",
-                     portfolioValue:(portfolioTotal*usd_rate).toFixed(2)
-                    
-                    }
-                     );
+                    currencySign: "$",
+                    portfolioValue: (portfolioTotal * usd_rate).toFixed(2)
+
+                }
+                );
 
                 break;
             case "EUR":
@@ -83,18 +83,19 @@ class index extends Component {
                     }
                     unit.push(array);
 
-                }) 
-                this.setState({ 
-                          currencySign: "€" ,
-                          portfolioValue:(portfolioTotal/usd_rate).toFixed(2)}, );
+                })
+                this.setState({
+                    currencySign: "€",
+                    portfolioValue: (portfolioTotal / usd_rate).toFixed(2)
+                });
                 break;
         }
-       
+
         cparray.map((posts, index) => {
             unit.map((data, id) => {
                 if (index === id) {
 
-                        posts.purchaseValue = data.purchaseValue,
+                    posts.purchaseValue = data.purchaseValue,
                         posts.currentValue = data.currentValue,
                         posts.totalValue = data.totalValue
 
@@ -105,25 +106,26 @@ class index extends Component {
         this.setState({
             stockArray: cparray,
         })
-      
+
     }
     calculateTotalValue() {
         let cparray = Object.assign([], this.state.stockArray);
         let data = JSON.parse(localStorage.getItem("stockData"));
 
-        cparray=data;
-       
-        if(cparray!==null){
-   
-        let total = 0;
+        cparray = data;
 
-        for (var i = 0; i < cparray.length; i++) {
-            if (cparray[i].portfolioID === this.props.id) {
-                total += parseFloat(cparray[i].totalValue);
+        if (cparray !== null) {
+
+            let total = 0;
+
+            for (var i = 0; i < cparray.length; i++) {
+                if (cparray[i].portfolioID === this.props.id) {
+                    total += parseFloat(cparray[i].totalValue);
+                }
             }
-        }
 
-        return total.toFixed(2);}
+            return total.toFixed(2);
+        }
 
     }
     handleFormChange = (evt) => {
@@ -135,7 +137,7 @@ class index extends Component {
         this.stockID = this.stockID + 1;
 
         let cparray = Object.assign([], this.state.stockArray);
-       
+
         let data = JSON.parse(localStorage.getItem("stockData"));
         try {
             var value = await this.fetchingData();
@@ -153,7 +155,7 @@ class index extends Component {
                     totalValue: total
 
                 })
-            
+
                 localStorage.setItem("stockData", JSON.stringify(cparray));
             }
             else {
@@ -182,10 +184,10 @@ class index extends Component {
 
         this.setState({
             stockArray: JSON.parse(localStorage.getItem("stockData")),
-            portfolioValue:this.calculateTotalValue()
+            portfolioValue: this.calculateTotalValue()
         })
 
-       
+
     }
 
     handleDelete = (index) => {
@@ -196,8 +198,8 @@ class index extends Component {
             stockArray: list,
         })
 
-        this.setState((state) =>({
-            portfolioValue:this.calculateTotalValue()
+        this.setState((state) => ({
+            portfolioValue: this.calculateTotalValue()
         }));
         localStorage.setItem("stockData", JSON.stringify(list));
     }
@@ -219,8 +221,6 @@ class index extends Component {
         const response_purchaseValue = await fetch(purchaseValueUrl);
         const purchaseValue = await response_purchaseValue.json();
 
-        
-
         return await {
             currentValue: currentValue,
             purchaseValue: purchaseValue[0].uHigh,
@@ -232,7 +232,7 @@ class index extends Component {
     handleShowGraph = (event) => {
         event.preventDefault();
         this.setState({
-            showGraph: true
+            showGraph: !this.state.showGraph
         })
     }
     componentWillMount() {
@@ -249,81 +249,92 @@ class index extends Component {
     render() {
         const { stockArray, stockName, quantity, datePurchase, currencyOption, currencySign, showGraph } = this.state;
         const isEnabled = (stockName.length && quantity.length && datePurchase.length) > 0;
-        return (
-            <div className="container">
-                <div className="Header">
-                    <span>{this.props.name}</span>
-                    <Currency currencyOption={currencyOption} changeData={this.handleCurrencyChange} ></Currency>
-                    <div>
-                        <ReactSVG id="cancel" src={Cancel} onClick={this.props.delete} />
 
-                    </div>
-                </div>
+        let view = (<div className="container">
+        <div className="Header">
+            <span>{this.props.name}</span>
+            <Currency currencyOption={currencyOption} changeData={this.handleCurrencyChange} ></Currency>
+            <div>
+                <ReactSVG id="cancel" src={Cancel} onClick={this.props.delete} />
 
-                <div className="tableWrapper">
-                    <table id="customers">
-                        <thead>
-                            <tr>
-                                <th>Symbol</th>
-                                <th>Purchase Value</th>
-                                <th>Quantity</th>
-                                <th>Current Value</th>
-                                <th>Total Value</th>
-                                <th>Purchased Date</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <div>
-                            {stockArray.map((post, index) => {
-                                if (post !== null && post.portfolioID === this.props.id) {
-                                    return (
-                                        <Stock
-                                            key={post.ids}
-                                            stockName={post.stockName}
-                                            currentValue={post.currentValue}
-                                            purchaseValue={post.purchaseValue}
-                                            quantity={post.quantity}
-                                            totalValue={post.totalValue}
-                                            purchaseDate={post.datePurchase}
-                                            delete={this.handleDelete.bind(this, index)}
-                                            currencySign={currencySign}
-                                        ></Stock>
-
-                                    )
-                                }
-                            })}
-                        </div>
-                    </table>
-                </div>
-
-                <form ref="stock">
-                    <div className="tableWrapper" style={{ overflow: "hidden" }}>
-
-                        <input type="text" name="stockName" onChange={this.handleFormChange} placeholder="Symbol" id="name"></input>
-                        <input type="date" name="datePurchase" onChange={this.handleFormChange} placeholder="Unit Value"></input>
-                        <input type="number" name="quantity" onChange={this.handleFormChange} placeholder="Quantity"></input>
-
-                    </div>
-                    <div className="Header" style={{ width: "fit-content" }}>
-                        <span>Total value of {this.props.name} :<span id="amount"></span> {this.state.portfolioValue}</span><span>{currencySign}</span>
-                    </div>
-                    <div className="Header">
-                        <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
-                        <button onClick={this.handleShowGraph} className="button buttonAdd" type="submit">Perf graph</button>
-                        <button onClick={"this.handleRemove"} className="button buttonAdd" type="submit">Refresh</button>
-                    </div>
-                </form>
-
-                <Graph
-                    show={showGraph}
-                    portfolioName={this.props.name}
-                    portfolioId={this.props.id}
-                    stockArray={stockArray}
-                    onClose={(e) => this.setState({ showGraph: false })}
-                />
-                
             </div>
-        );
+        </div>
+
+        <div className="tableWrapper">
+            <table id="customers">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Purchase Value</th>
+                        <th>Quantity</th>
+                        <th>Current Value</th>
+                        <th>Total Value</th>
+                        <th>Purchased Date</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <div>
+                    {stockArray.map((post, index) => {
+                        if (post !== null && post.portfolioID === this.props.id) {
+                            return (
+                                <Stock
+                                    key={post.ids}
+                                    stockName={post.stockName}
+                                    currentValue={post.currentValue}
+                                    purchaseValue={post.purchaseValue}
+                                    quantity={post.quantity}
+                                    totalValue={post.totalValue}
+                                    purchaseDate={post.datePurchase}
+                                    delete={this.handleDelete.bind(this, index)}
+                                    currencySign={currencySign}
+                                ></Stock>
+
+                            )
+                        }
+                    })}
+                </div>
+            </table>
+        </div>
+
+        <form ref="stock">
+            <div className="tableWrapper" style={{ overflow: "hidden" }}>
+
+                <input type="text" name="stockName" onChange={this.handleFormChange} placeholder="Symbol" id="name"></input>
+                <input type="date" name="datePurchase" onChange={this.handleFormChange} placeholder="Unit Value"></input>
+                <input type="number" name="quantity" onChange={this.handleFormChange} placeholder="Quantity"></input>
+
+            </div>
+            <div className="Header" style={{ width: "fit-content" }}>
+                <span>Total value of {this.props.name} :<span id="amount"></span> {this.state.portfolioValue}</span><span>{currencySign}</span>
+            </div>
+            <div className="Header">
+                <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
+                <button onClick={this.handleShowGraph} className="button buttonAdd" type="submit">Perf graph</button>
+                <button onClick={"this.handleRemove"} className="button buttonAdd" type="submit">Refresh</button>
+            </div>
+        </form>
+    </div>);
+
+        let graph = (<div>
+            <Graph
+                //show={showGraph}
+                portfolioName={this.props.name}
+                portfolioId={this.props.id}
+                stockArray={stockArray}
+                onClose={this.handleShowGraph}
+            />
+        </div>)  ;
+        
+        if (showGraph) {
+            return (
+                <Fragment>
+                    {view}
+                    {graph}
+                </Fragment>
+            );
+        } else {
+            return view;
+        }   
     }
 }
 

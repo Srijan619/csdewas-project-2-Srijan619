@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import './graph.css';
 import Cancel from '../../assets/cancel.svg';
 import ReactSVG from 'react-svg';
@@ -13,51 +13,46 @@ class Index extends Component {
         this.state = {
             timeSelected: "5d",
             fetchedValue: [],
-            stockNames:[],
+            stockNames: [],
 
         };
         this.state.stockNames = this.filterStockNames();
         this.handleTimeChange = this.handleTimeChange.bind(this);
-        this.graphDraw = this.graphDraw.bind(this);
+        //this.graphDraw = this.graphDraw.bind(this);
     }
 
-
+/*
     graphDraw = async (event) => {
-        var fetchedValue = await this.fetchingData();
-        this.setState({
-            fetchedValue: fetchedValue
-        })
 
-    }
+
+    }*/
 
     async fetchingData() {
-      
+
         const test_apiKey = "Tpk_3f5f6e08c5864242aa0503c8d2ef115a";
         const test_url = "https://sandbox.iexapis.com/stable/stock/market/batch?symbols=";
         const range = this.state.timeSelected;
         const stockNames = this.state.stockNames;
-        console.log(stockNames)
-        if (stockNames !== "" ||stockNames.length!==0) {
+
+        if (stockNames !== "" || stockNames.length !== 0) {
             const fetchDataUrl = test_url + stockNames.toString() + "&types=chart&filter=uClose,date,label&range=" + range + "&last=5&token=" + test_apiKey;
-           //Getting the current Value from the URL
+            //Getting the current Value from the URL
             const response_currentValue = await fetch(fetchDataUrl);
             const fetchedValue = await response_currentValue.json();
             return await
                 fetchedValue
         }
-        else{
-            this.state.stockNames = this.filterStockNames();
-        }
-     
+
+
 
     }
     filterStockNames() {
         let stockNames = [];
         const stockArray = this.props.stockArray //Getting all the stock array
-       
+
         const portfolioId = this.props.portfolioId //Getting portfolioID to filter data
         const filterData = stockArray.map(post => {
-            if (post!==null && post.portfolioID === portfolioId) {
+            if (post !== null && post.portfolioID === portfolioId) {
                 stockNames.push(post.stockName);
             }
         })
@@ -65,19 +60,42 @@ class Index extends Component {
         let unique_stockname = [...new Set(stockNames)]
 
         return unique_stockname;
-      
+
     }
     handleTimeChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
-    componentDidMount() {
-    
-        this.graphDraw();
+    async componentDidMount() {
+        try {
+            var fetchedValue = await this.fetchingData();
+        }
+        catch (error) {
+            console.log(error);
+        }
+
+        this.setState({
+            fetchedValue: fetchedValue
+        })
+
     }
 
     render() {
         const { fetchedValue } = this.state;
-
+        let chartDialog;
+        if(fetchedValue.length!==0) {
+           chartDialog = (
+           <Fragment>
+           {console.log(fetchedValue)}
+            <Chart
+                dataToSend={fetchedValue}
+                stockNames={this.state.stockNames}
+            ></Chart>
+            </Fragment>)
+        } else {
+            <div>
+            </div>
+        }
+       
         let dialog = (
             <div className="mainContainer">
                 <div className="graphContainer">
@@ -88,11 +106,7 @@ class Index extends Component {
 
                     <br></br>
                     <div className="graphCollection">
-                        
-                        <Chart
-                            dataToSend={fetchedValue}
-                            stockNames={this.state.stockNames}
-                        ></Chart>
+                        {chartDialog}
 
                     </div>
                     <div className="timeCollection">
@@ -115,9 +129,6 @@ class Index extends Component {
             </div>
         );
 
-        if (!this.props.show) {
-            dialog = null;
-        }
         return (
             <div>
                 {dialog}
