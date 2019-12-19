@@ -9,33 +9,36 @@ class App extends Component {
     super(props);
     this.postID=0;
 
+    /* Initialising initial state for the portfolio data*/
     this.state = {
       id:"",
       portfolioName:'',
       users: []
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);// Binds the add button to add the portfolio
   }
 
+  //The below function changes the state of the text field of adding the portfolio
   handlePortfolioName = (event) =>{
    this.setState({
      portfolioName:event.target.value
    })
   }
 
+  // This function handles the addition of portfolio
   handleSubmit = (event) => {
     event.preventDefault();
-    this.postID = this.postID + 1;
-    let cparray = Object.assign([], this.state.users);
-    const name = this.state.portfolioName;
-    let data=JSON.parse(localStorage.getItem("portfolio"));
-    if (data===null||data.length===0) {
-      cparray.push({
-        id: this.postID,
+    this.postID = this.postID + 1; //Changing the id of the portfolio to a unique id everytime new portfolio is added
+    let cparray = Object.assign([], this.state.users); //Copying the array of portfolios to add new portfolio to that one
+    const name = this.state.portfolioName;// getting the portfolioname
+    let data=JSON.parse(localStorage.getItem("portfolio"));// gettting the portfolio array from the local storage
+    if (data===null||data.length===0) { // checking the condition inf there are any data in the local storage
+      cparray.push({                // pushing data to new array
+        id: this.postID, 
         portfolioName: name,
   
       })
-      localStorage.setItem("portfolio", JSON.stringify(cparray));
+      localStorage.setItem("portfolio", JSON.stringify(cparray)); // setting the  data to localstorage
     }
     else {
       let  last_id = parseInt(data[data.length - 1].id);
@@ -49,11 +52,13 @@ class App extends Component {
     }
     this.setState({
       name: "",
-      users: JSON.parse(localStorage.getItem("portfolio"))
+      users: JSON.parse(localStorage.getItem("portfolio")) //Setting the state of the newly changed localstorage to the state array
     })
-    this.handleFormReset()
+    this.handleFormReset() // reseting the input field after a succesful entry
 
   }
+
+  //This function handles the deletion of the portfolio
   handleDelete = (index,id) => {
     
     let list = JSON.parse(localStorage.getItem("portfolio"));
@@ -67,7 +72,7 @@ class App extends Component {
     });}
     localStorage.setItem("stockData",JSON.stringify(modifiedStockData));
     
-    list.splice(index, 1);
+    list.splice(index, 1);  // Deleting the portfolio by the index
     this.setState({
       users: list
     })
@@ -75,6 +80,7 @@ class App extends Component {
     
     
   }
+  // This function makes sure the component is mounted with the items from the local storage
   componentWillMount() {
     let data = localStorage.getItem("portfolio");
     
@@ -84,6 +90,7 @@ class App extends Component {
     })}
   }
 
+  //This function reset the input field for user to input new portfolio name
   handleFormReset = () => {
     this.setState(({
       portfolioName:""
@@ -91,8 +98,8 @@ class App extends Component {
   }
 
   render() {
-    const {users,portfolioName}=this.state;
-    const isEnabled=this.state.portfolioName.length>0;
+    const {users,portfolioName}=this.state; // getting the current state of portfolio array and the portfolio name
+    const isEnabled=this.state.portfolioName.length>0;// Checking if user has input any data to the input field to toggle it to enabled or disabled
     return (
       <div className="App">
        <form onSubmit={this.handleSubmit}>
@@ -109,9 +116,10 @@ class App extends Component {
        
         <div className="content">
           
-          {users.map((post,index)=>{
+          {users.map((post,index)=>{ //Mapping all the data from the portfolio array to the display
             return(
               <Portfolio
+              // passing props to the portfolio component
               key={post.id}
               id={post.id}
               name={post.portfolioName}
