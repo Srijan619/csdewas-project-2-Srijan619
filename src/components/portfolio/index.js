@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React, { Component, Fragment } from 'react';
 import ReactSVG from 'react-svg'
 import './portfolio.css';
@@ -93,9 +94,8 @@ class index extends Component {
 
         cparray.map((posts, index) => {
             unit.map((data, id) => {
-                if (index === id) {
-
-                    posts.purchaseValue = data.purchaseValue,
+                if (index===id) {
+                        posts.purchaseValue = data.purchaseValue,
                         posts.currentValue = data.currentValue,
                         posts.totalValue = data.totalValue
 
@@ -191,7 +191,7 @@ class index extends Component {
     }
 
     handleDelete = (index) => {
-        event.preventDefault();
+        
         let list = JSON.parse(localStorage.getItem("stockData"));
         list.splice(index, 1);
         this.setState({
@@ -310,14 +310,13 @@ class index extends Component {
             <div className="Header">
                 <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
                 <button onClick={this.handleShowGraph} className="button buttonAdd" type="submit">Perf graph</button>
-                
             </div>
         </form>
     </div>);
 
         let graph = (<div>
             <Graph
-                //show={showGraph}
+               
                 portfolioName={this.props.name}
                 portfolioId={this.props.id}
                 stockArray={stockArray}

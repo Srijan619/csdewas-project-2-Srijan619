@@ -18,14 +18,23 @@ class Index extends Component {
         };
         this.state.stockNames = this.filterStockNames();
         this.handleTimeChange = this.handleTimeChange.bind(this);
-        //this.graphDraw = this.graphDraw.bind(this);
+        this.graphDraw = this.graphDraw.bind(this);
     }
 
-/*
+
     graphDraw = async (event) => {
+        try {
+            var fetchedValue = await this.fetchingData();
+        }
+        catch (error) {
+            console.log(error);
+        }
 
+        this.setState({
+            fetchedValue: fetchedValue
+        })
 
-    }*/
+    }
 
     async fetchingData() {
 
@@ -65,37 +74,23 @@ class Index extends Component {
     handleTimeChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
-    async componentDidMount() {
-        try {
-            var fetchedValue = await this.fetchingData();
-        }
-        catch (error) {
-            console.log(error);
-        }
-
-        this.setState({
-            fetchedValue: fetchedValue
-        })
-
+    componentDidMount() {
+        this.graphDraw()
     }
-
     render() {
         const { fetchedValue } = this.state;
         let chartDialog;
-        if(fetchedValue.length!==0) {
-           chartDialog = (
-           <Fragment>
-           {console.log(fetchedValue)}
-            <Chart
-                dataToSend={fetchedValue}
-                stockNames={this.state.stockNames}
-            ></Chart>
-            </Fragment>)
-        } else {
-            <div>
-            </div>
-        }
-       
+        if (fetchedValue.length !== 0) {
+            chartDialog = (
+                <Fragment>
+
+                    <Chart
+                        dataToSend={fetchedValue}
+                        stockNames={this.state.stockNames}
+                    ></Chart>
+                </Fragment>)
+        } 
+
         let dialog = (
             <div className="mainContainer">
                 <div className="graphContainer">

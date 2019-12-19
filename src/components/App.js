@@ -1,9 +1,7 @@
+/* eslint-disable no-unused-expressions */
 import React, { Component } from 'react';
 import Portfolio from './portfolio';
 import './App.css';
-
-
-
 
 class App extends Component {
 
@@ -57,8 +55,6 @@ class App extends Component {
 
   }
   handleDelete = (index,id) => {
-    event.preventDefault();
-  
     
     let list = JSON.parse(localStorage.getItem("portfolio"));
 

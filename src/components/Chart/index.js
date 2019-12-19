@@ -15,7 +15,7 @@ class index extends Component {
 
     for (var i = 0; i < stockNames.length; i++) {
       let upperCase = stockNames[i].toUpperCase();
-      console.log(upperCase)
+ 
       let formatData = {
         name: upperCase,
         color: this.get_random_color(),
