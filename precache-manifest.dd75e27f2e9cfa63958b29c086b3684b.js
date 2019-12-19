@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "71e7c55a96dbfc19521a",
+    "revision": "f53b84bc7bc276f9b213",
     "url": "/csdewas-project-2-Srijan619/static/css/main.8e67beed.chunk.css"
   },
   {
-    "revision": "71e7c55a96dbfc19521a",
-    "url": "/csdewas-project-2-Srijan619/static/js/main.71e7c55a.chunk.js"
+    "revision": "f53b84bc7bc276f9b213",
+    "url": "/csdewas-project-2-Srijan619/static/js/main.f53b84bc.chunk.js"
   },
   {
     "revision": "e8eef6eddfb2188bf005",
@@ -20,7 +20,7 @@ self.__precacheManifest = [
     "url": "/csdewas-project-2-Srijan619/static/media/cancel.b6512207.svg"
   },
   {
-    "revision": "054187474b63588a1b93a403db74b60e",
+    "revision": "86737b5e4a217f6da451685c960157cd",
     "url": "/csdewas-project-2-Srijan619/index.html"
   }
 ];
