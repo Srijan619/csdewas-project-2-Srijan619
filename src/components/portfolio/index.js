@@ -310,7 +310,7 @@ class index extends Component {
             <div className="Header">
                 <button onClick={this.handleAdd} disabled={!isEnabled} className="button buttonAdd" type="submit">Add Stock</button>
                 <button onClick={this.handleShowGraph} className="button buttonAdd" type="submit">Perf graph</button>
-                <button onClick={"this.handleRemove"} className="button buttonAdd" type="submit">Refresh</button>
+                
             </div>
         </form>
     </div>);
