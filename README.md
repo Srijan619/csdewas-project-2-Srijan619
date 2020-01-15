@@ -35,4 +35,4 @@ There is only one user for the current application. No authentication is require
 
 * ReactJs
 * Currency exchange rates, stock prices and historical prices are available via the following API: https://iexcloud.io/docs/api/
-* For creating graphs, http://recharts.org/but
+* For creating graphs, http://recharts.org/
