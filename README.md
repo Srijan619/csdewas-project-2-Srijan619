@@ -1,7 +1,6 @@
 ***To the landing page***  https://it-teaching-abo-akademi.github.io/csdewas-project-2-Srijan619/
-
 #### Project Description
-The  customer  needs  an  application  to  visualize  the  performance  of  stock  portfolios.  The working name of the software to be developed is SPMS, short for Stock Portfolio Management System.In  the  program,  auser  can manage several  portfolios.  A portfoliois  a  collection  of stocks. A stockis a collection of shares of a given corporation(identified by a symbol of 3 or 4 letters –for instance, NOK for Nokia, or MSFT for Microsoft). A shareis an atomic unit of ownership of a company characterized by a symboland a value.
+The   visualization of  the  performance  of  stock  portfolios.  The working name of the software to be developed is SPMS, short for Stock Portfolio Management System. In  the  program,  a user  can manage several  portfolios.  A portfolio is  a  collection  of stocks. A stock is a collection of shares of a given corporation(identified by a symbol of 3 or 4 letters –for instance, NOK for Nokia, or MSFT for Microsoft). A share is an atomic unit of ownership of a company characterized by a symbol and a value.
 
 #### Assumptions
 
